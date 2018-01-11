@@ -143,7 +143,7 @@ class ClusterExperiment(object):
                 # Add a final flag modifying the log filename to be unique.
                 log_filename = 'templog' + str(i)
 
-                temp_log_dir = FLAGS.log_dir + 'templog' + str(i) + '/'
+                temp_log_dir = log_dir + 'templog' + str(i) + '/'
 
                 command += ' --log_dir=' + temp_log_dir
 
@@ -246,7 +246,7 @@ class ClusterExperiment(object):
             jobs_complete = (all(job_complete_flags))
 
             # Check if we've reached timeout.
-            timeout = (elapsed_time > FLAGS.max_runtime)
+            timeout = (elapsed_time > max_runtime)
 
             # # Accomodate Python 3+
             # with open(FLAGS.log_dir '/' + FLAGS.log_filename, 'w') as csvfile:
