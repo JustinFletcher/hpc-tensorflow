@@ -101,6 +101,8 @@ def tensorflow_experiment():
             if sv.should_stop():
                 break
 
+            start_time = time.time()
+
             # If it is a batch refresh interval, refresh the batch.
             if((i % FLAGS.batch_interval == 0) or (i == 0)):
 
@@ -152,7 +154,6 @@ def tensorflow_experiment():
                 #          np.sum(running_times)))
 
             # Hack the start time.
-            start_time = time.time()
 
             sess.run(model.optimize, feed_dict=train_dict)
 
