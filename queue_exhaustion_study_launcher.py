@@ -27,13 +27,20 @@ def main(FLAGS):
 
     # Set independent parameters.
     exp.add_design('train_batch_size', [256])
-    exp.add_design('batch_interval', [1, 10, 100])
-    exp.add_design('train_enqueue_threads', [1, 10, 100])
+    exp.add_design('batch_interval', [1, 2, 4, 8, 32, 128])
+    exp.add_design('train_enqueue_threads', [1, 10, 50, 100])
     exp.add_design('learning_rate', [0.0001])
-    exp.add_design('max_steps', [5000])
+    exp.add_design('max_steps', [1000])
+    exp.add_design('test_interval', [100])
 
     # Launch the experiment.
-    exp.launch_experiment(FLAGS.experiment_py_file, FLAGS.log_dir)
+    exp.launch_experiment(exp_filename=FLAGS.experiment_py_file,
+                          log_dir=FLAGS.log_dir,
+                          account_str='MHPCC96670DA1',
+                          queue_str='standard',
+                          module_str='anaconda2/5.0.1 gcc/5.3.0 cudnn/6.0',
+                          manager='pbs',
+                          shuffle_job_order=True)
 
     # Manually note response varaibles.
     response_labels = ['step_num',

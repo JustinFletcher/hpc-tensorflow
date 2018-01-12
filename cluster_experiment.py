@@ -103,6 +103,9 @@ class ClusterExperiment(object):
     def launch_experiment(self,
                           exp_filename,
                           log_dir,
+                          account_str,
+                          queue_str,
+                          module_str,
                           manager='pbs',
                           shuffle_job_order=True):
 
@@ -157,8 +160,24 @@ class ClusterExperiment(object):
 
                 self._input_output_maps.append(input_output_map)
 
-                # qsub -I -X -l walltime=0:30:00 -l select=1:ncpus=20:mpiprocs=20 -l place=scatter:excl -A MHPCC96670DA1 -q debug -V
                 # Build the job string.
+                job_string = '#!/bin/bash' + '\n'
+                job_string += '#PBS -N ' + job_name + '\n'
+                job_string += '#PBS -l walltime=' + walltime + '\n'
+                job_string += '#PBS -l select=' + select + '\n'
+                job_string += '#PBS -o ~/log/output/' + job_name + '.out \n'
+                job_string += '#PBS -e ~/log/error/' + job_name + '.err \n'
+
+                job_string += '#PBS -A ' + account_str + '\n'
+                job_string += '#PBS -q ' + queue_str + '\n'
+                job_string += 'module load ' + module_str + '\n'
+
+                job_string += 'cd $PBS_O_WORKDIR ' + '\n'
+
+                job_string += command
+
+
+
                 job_string = """#!/bin/bash
                 #PBS -N %s
                 #PBS -l walltime=%s

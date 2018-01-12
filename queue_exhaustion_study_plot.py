@@ -206,7 +206,7 @@ for i, row_level in enumerate(row_levels):
                       ymin1=0,
                       ymin2=0,
                       xmax=5000,
-                      ymax1=0.05,
+                      ymax1=0.1,
                       ymax2=10000)
 
         # line, = ax.plot(step,
