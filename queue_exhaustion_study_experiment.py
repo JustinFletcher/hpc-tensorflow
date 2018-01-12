@@ -142,15 +142,16 @@ def tensorflow_experiment():
                 train_errors.append(train_error)
                 val_losses.append(val_loss)
                 val_errors.append(val_error)
-                mean_running_times.append(np.mean(running_times))
 
-                # Measure the pre-optimize queue size and store it.
-                current_queue_size = sess.run(qr)
-                time.sleep(1)
-                enqueue_rate = (sess.run(qr) - current_queue_size) / 1.0
-                mean_enqueue_rates.append(enqueue_rate)
+                mean_running_time = np.mean(running_times)
+                mean_running_times.append(mean_running_time)
 
-                mean_dequeue_rates.append(enqueue_rate - np.mean(net_enqueue_rates))
+                mean_net_enqueue_rate = np.mean(net_enqueue_rates)
+
+                mean_dequeue_rate = FLAGS.train_batch_size / (mean_running_time * FLAGS.batch_interval)
+
+                mean_enqueue_rates.append(mean_net_enqueue_rate + mean_dequeue_rate)
+                mean_dequeue_rates.append(mean_dequeue_rate)
 
                 queue_sizes.append(current_queue_size)
 
