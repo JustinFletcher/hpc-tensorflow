@@ -33,8 +33,20 @@ def main(FLAGS):
     # Launch the experiment.
     exp.launch_experiment(FLAGS.experiment_py_file, FLAGS.log_dir)
 
+    # Manually note response varaibles.
+    response_labels = ['step_num',
+                       'train_loss',
+                       'train_error',
+                       'val_loss',
+                       'val_error',
+                       'mean_running_time',
+                       'queue_size']
+
     # Wait for the output to return.
-    exp.join_job_output(FLAGS.log_dir, FLAGS.log_filename, FLAGS.max_runtime)
+    exp.join_job_output(FLAGS.log_dir,
+                        FLAGS.log_filename,
+                        FLAGS.max_runtime,
+                        response_labels)
 
     print("All jobs complete. Exiting.")
 

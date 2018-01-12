@@ -2,12 +2,12 @@
 #!/usr/bin/python
 # Example PBS cluster job submission in Python
 
+import os
 import csv
 import time
 import random
 import itertools
 import subprocess
-import tensorflow as tf
 
 
 class ClusterExperiment(object):
@@ -285,12 +285,10 @@ class ClusterExperiment(object):
 
                     output_file = output_dir + output_filename
 
+                    print("output_file")
+
                     # Check if the output file has been written.
-                    if tf.gfile.Exists(output_file):
-
-                        print("-----------remove_model_ckpt------------")
-
-                        # tf.gfile.Remove(output_dir + "model.ckpt*")
+                    if os.path.exists(output_file):
 
                         with open(output_file, 'rb') as f:
 

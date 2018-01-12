@@ -40,6 +40,7 @@ def tensorflow_experiment():
     train_losses = []
     train_errors = []
     mean_running_times = []
+    queue_sizes = []
 
     print("------------model_output-------------")
     # Instantiate a model.
@@ -62,6 +63,9 @@ def tensorflow_experiment():
 
     # Merge the summary.
     tf.summary.merge_all()
+
+    # Get queue size Op.
+    qr = tf.get_collection(tf.GraphKeys.QUEUE_RUNNERS)[1].queue.size()
 
     # Instantiate a session and initialize it.
     sv = tf.train.Supervisor(logdir=FLAGS.log_dir, save_summaries_secs=600.0)
@@ -112,6 +116,10 @@ def tensorflow_experiment():
             # If we have reached a testing interval, test.
             if (i % FLAGS.test_interval == 0):
 
+
+                # Measure the pre-optimize queue size and store it.
+                current_queue_size = sess.run(qr)
+
                 # Compute error over the training set.
                 train_error = sess.run(model.error, feed_dict=train_dict)
 
@@ -131,6 +139,7 @@ def tensorflow_experiment():
                 val_losses.append(val_loss)
                 val_errors.append(val_error)
                 mean_running_times.append(np.mean(running_times))
+                queue_sizes.append(current_queue_size)
 
                 # Print relevant values.
                 # print('%d | %.6f | %.2f | %.6f | %.2f | %.6f | %.2f'
@@ -167,12 +176,13 @@ def tensorflow_experiment():
         csvwriter = csv.writer(csvfile)
 
         # Iterate over the results vectors for each config.
-        for (step, tl, te, vl, ve, mrt) in zip(steps,
-                                               train_losses,
-                                               train_errors,
-                                               val_losses,
-                                               val_errors,
-                                               mean_running_times):
+        for (step, tl, te, vl, ve, mrt, qs) in zip(steps,
+                                                   train_losses,
+                                                   train_errors,
+                                                   val_losses,
+                                                   val_errors,
+                                                   mean_running_times,
+                                                   queue_sizes):
 
             # Write the data to a csv.
             csvwriter.writerow([step,
@@ -180,7 +190,8 @@ def tensorflow_experiment():
                                 te,
                                 vl,
                                 ve,
-                                mrt])
+                                mrt,
+                                qs])
 
     return()
 
