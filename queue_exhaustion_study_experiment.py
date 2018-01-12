@@ -40,6 +40,8 @@ def tensorflow_experiment():
     train_losses = []
     train_errors = []
     mean_running_times = []
+    mean_enqueue_rates = []
+    mean_dequeue_rates = []
     queue_sizes = []
 
     print("------------model_output-------------")
@@ -78,6 +80,7 @@ def tensorflow_experiment():
 
         # Declare timekeeping vars.
         running_times = [0]
+        dequeue_rates = [0]
         optimize_step_running_time = 0
 
         # print("------------training_output-------------")
@@ -103,6 +106,12 @@ def tensorflow_experiment():
 
             start_time = time.time()
 
+            # Measure queue size.
+            current_queue_size_dequeue = sess.run(qr)
+
+            # Start timer.
+            dequeue_start_time = time.time()
+
             # If it is a batch refresh interval, refresh the batch.
             if((i % FLAGS.batch_interval == 0) or (i == 0)):
 
@@ -117,9 +126,6 @@ def tensorflow_experiment():
 
             # If we have reached a testing interval, test.
             if (i % FLAGS.test_interval == 0):
-
-                # Measure the pre-optimize queue size and store it.
-                current_queue_size = sess.run(qr)
 
                 # Compute error over the training set.
                 train_error = sess.run(model.error, feed_dict=train_dict)
@@ -140,9 +146,19 @@ def tensorflow_experiment():
                 val_losses.append(val_loss)
                 val_errors.append(val_error)
                 mean_running_times.append(np.mean(running_times))
+                mean_dequeue_rates.append(np.mean(dequeue_rates))
+
+                # Measure the pre-optimize queue size and store it.
+                current_queue_size = sess.run(qr)
+                time.sleep(0.1)
+                enqueue_rate = (sess.run(qr) - current_queue_size) / 0.01
+                mean_enqueue_rates.append(enqueue_rate)
+
                 queue_sizes.append(current_queue_size)
 
+                # Reset running times measurment
                 running_times = []
+                dequeue_rates = []
 
                 # Print relevant values.
                 # print('%d | %.6f | %.2f | %.6f | %.2f | %.6f | %.2f'
@@ -152,10 +168,9 @@ def tensorflow_experiment():
                 #          val_loss,
                 #          val_error,
                 #          np.mean(running_times),
-                #          np.sum(running_times)))
+                #          np.sum(running_times))) 
 
-            # Hack the start time.
-
+            # Optimize the model.
             sess.run(model.optimize, feed_dict=train_dict)
 
             # train_writer.add_summary(summary, i)
@@ -163,6 +178,16 @@ def tensorflow_experiment():
             # Update timekeeping variables.
             optimize_step_running_time = time.time() - start_time
             running_times.append(optimize_step_running_time)
+
+            # Stop timer
+            dequeue_running_time = time.time() - dequeue_start_time
+
+            # Measure the queue now.
+            final_queue_size_dequeue = sess.run(qr)
+
+            # Compute and append the dequeue rate.
+            dequeue_rate = (current_queue_size_dequeue - final_queue_size_dequeue) / dequeue_running_time
+            dequeue_rates.append(dequeue_rate)
 
         print("----------------------------------------")
         # Close the summary writers.
@@ -178,13 +203,15 @@ def tensorflow_experiment():
         csvwriter = csv.writer(csvfile)
 
         # Iterate over the results vectors for each config.
-        for (step, tl, te, vl, ve, mrt, qs) in zip(steps,
-                                                   train_losses,
-                                                   train_errors,
-                                                   val_losses,
-                                                   val_errors,
-                                                   mean_running_times,
-                                                   queue_sizes):
+        for (step, tl, te, vl, ve, mrt, qs, mer, mdr) in zip(steps,
+                                                             train_losses,
+                                                             train_errors,
+                                                             val_losses,
+                                                             val_errors,
+                                                             mean_running_times,
+                                                             queue_sizes,
+                                                             mean_enqueue_rates,
+                                                             mean_enqueue_rates):
 
             # Write the data to a csv.
             csvwriter.writerow([step,
@@ -193,7 +220,9 @@ def tensorflow_experiment():
                                 vl,
                                 ve,
                                 mrt,
-                                qs])
+                                qs,
+                                mer,
+                                mdr])
 
     return()
 

@@ -14,8 +14,7 @@ plt.style.use('seaborn-whitegrid')
 # df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/queue_exhaustion_study.csv')
 df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/tensorflow_experiment_merged.csv')
 
-df = df.sort_values(['batch_interval'])
-# df = df.sort_values(['train_enqueue_threads'])
+df = df.sort_values(['batch_interval', 'train_enqueue_threads'])
 
 # df = df.drop(df[df.optimizer == 'sgd'].index)
 
@@ -63,7 +62,7 @@ def bar_line_plot(ax1,
     """
     ax2 = ax1.twinx()
 
-    ax1.bar(time, data2, color=c2, width=50)
+    ax1.bar(time, data2, color=c2, width=25)
 
     ax1.set_xlim(xmin, xmax)
     ax1.set_ylim(ymin2, ymax2)
@@ -205,7 +204,7 @@ for i, row_level in enumerate(row_levels):
                       xmin=0,
                       ymin1=0,
                       ymin2=0,
-                      xmax=5000,
+                      xmax=1000,
                       ymax1=0.1,
                       ymax2=10000)
 
