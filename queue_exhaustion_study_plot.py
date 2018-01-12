@@ -180,7 +180,7 @@ for i, row_level in enumerate(row_levels):
 
         # ax.loglog()
 
-        ax.set_ylim(0.0, 10000)
+        # ax.set_ylim(0.0, 10000)
         # ax.set_xlim(1, 1000)
 
         # if plot_error:
@@ -212,7 +212,7 @@ for i, row_level in enumerate(row_levels):
                       ymin2=0,
                       xmax=1000,
                       ymax1=0.1,
-                      ymax2=10000)
+                      ymax2=100000)
 
         # line, = ax.plot(step,
         #                 mrt_mean,

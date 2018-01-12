@@ -80,8 +80,8 @@ def tensorflow_experiment():
 
         # Declare timekeeping vars.
         running_times = [0]
-        dequeue_rates = [0]
-        optimize_step_running_time = 0
+        net_enqueue_rates = [0]
+        running_time = 0
 
         # print("------------training_output-------------")
 
@@ -107,10 +107,7 @@ def tensorflow_experiment():
             start_time = time.time()
 
             # Measure queue size.
-            current_queue_size_dequeue = sess.run(qr)
-
-            # Start timer.
-            dequeue_start_time = time.time()
+            current_queue_size_net = sess.run(qr)
 
             # If it is a batch refresh interval, refresh the batch.
             if((i % FLAGS.batch_interval == 0) or (i == 0)):
@@ -146,19 +143,20 @@ def tensorflow_experiment():
                 val_losses.append(val_loss)
                 val_errors.append(val_error)
                 mean_running_times.append(np.mean(running_times))
-                mean_dequeue_rates.append(np.mean(dequeue_rates))
 
                 # Measure the pre-optimize queue size and store it.
                 current_queue_size = sess.run(qr)
-                time.sleep(0.1)
-                enqueue_rate = (sess.run(qr) - current_queue_size) / 0.01
+                time.sleep(1)
+                enqueue_rate = (sess.run(qr) - current_queue_size) / 1.0
                 mean_enqueue_rates.append(enqueue_rate)
+
+                mean_dequeue_rates.append(enqueue_rate - np.mean(net_enqueue_rates))
 
                 queue_sizes.append(current_queue_size)
 
                 # Reset running times measurment
                 running_times = []
-                dequeue_rates = []
+                net_enqueue_rates = []
 
                 # Print relevant values.
                 # print('%d | %.6f | %.2f | %.6f | %.2f | %.6f | %.2f'
@@ -176,18 +174,15 @@ def tensorflow_experiment():
             # train_writer.add_summary(summary, i)
 
             # Update timekeeping variables.
-            optimize_step_running_time = time.time() - start_time
-            running_times.append(optimize_step_running_time)
-
-            # Stop timer
-            dequeue_running_time = time.time() - dequeue_start_time
+            running_time = time.time() - start_time
+            running_times.append(running_time)
 
             # Measure the queue now.
-            final_queue_size_dequeue = sess.run(qr)
+            final_queue_size_net = sess.run(qr)
 
             # Compute and append the dequeue rate.
-            dequeue_rate = (current_queue_size_dequeue - final_queue_size_dequeue) / dequeue_running_time
-            dequeue_rates.append(dequeue_rate)
+            net_enqueue_rate = (current_queue_size_net - final_queue_size_net) / running_time
+            net_enqueue_rates.append(net_enqueue_rate)
 
         print("----------------------------------------")
         # Close the summary writers.
