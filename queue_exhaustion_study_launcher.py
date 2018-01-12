@@ -27,7 +27,9 @@ def main(FLAGS):
 
     # Set independent parameters.
     exp.add_design('train_batch_size', [128, 256])
-    exp.add_design('learning_rate', [0.001, 0.0001])
+    exp.add_design('batch_interval', [1, 2, 4, 8, 16, 32])
+    exp.add_design('train_enqueue_threads', [1, 10, 100, 1000])
+    exp.add_design('learning_rate', [0.0001])
     exp.add_design('max_steps', [5000])
 
     # Launch the experiment.
@@ -69,7 +71,7 @@ if __name__ == '__main__':
                         help='Number of seconds to run before giving up.')
 
     parser.add_argument('--experiment_py_file', type=str,
-                        default='~/hpc-tensorflow/tensorflow_experiment.py',
+                        default='~/hpc-tensorflow/queue_exhaistion_experiment.py',
                         help='Number of seconds to run before giving up.')
 
     # Parse known arguements.

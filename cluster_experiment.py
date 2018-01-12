@@ -188,7 +188,11 @@ class ClusterExperiment(object):
                 print("Unknown manager supplied to launch_experiment().")
                 exit()
 
-    def join_job_output(self, log_dir, log_filename, max_runtime):
+    def join_job_output(self,
+                        log_dir,
+                        log_filename,
+                        max_runtime,
+                        response_labels):
 
         jobs_complete = False
         timeout = False
@@ -254,14 +258,6 @@ class ClusterExperiment(object):
             # Accomodate Python 2.7 on Hokulea.
             with open(log_dir + '/' + log_filename, 'wb') as csvfile:
 
-                # Manually note response varaibles.
-                response_labels = ['step_num',
-                                   'train_loss',
-                                   'train_error',
-                                   'val_loss',
-                                   'val_error',
-                                   'mean_running_time']
-
                 # Join lists.
                 headers = self.get_parameter_labels() + response_labels
 
@@ -285,8 +281,6 @@ class ClusterExperiment(object):
 
                     output_file = output_dir + output_filename
 
-                    print("output_file")
-
                     # Check if the output file has been written.
                     if os.path.exists(output_file):
 
@@ -297,8 +291,6 @@ class ClusterExperiment(object):
                             for output_row in reader:
 
                                 csvwriter.writerow(input_row + output_row)
-
-                        print("---------------------------------------")
 
                     else:
 
