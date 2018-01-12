@@ -59,7 +59,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--log_dir', type=str,
-                        default='../log/tensorflow_experiment/',
+                        default='../log/queue_exhaustion_study/',
                         help='Summaries log directory.')
 
     parser.add_argument('--log_filename', type=str,
@@ -71,7 +71,7 @@ if __name__ == '__main__':
                         help='Number of seconds to run before giving up.')
 
     parser.add_argument('--experiment_py_file', type=str,
-                        default='~/hpc-tensorflow/queue_exhaistion_experiment.py',
+                        default='~/hpc-tensorflow/queue_exhaustion_study_experiment.py',
                         help='Number of seconds to run before giving up.')
 
     # Parse known arguements.
