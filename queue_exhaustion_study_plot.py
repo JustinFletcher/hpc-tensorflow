@@ -14,7 +14,8 @@ plt.style.use('seaborn-whitegrid')
 # df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/queue_exhaustion_study.csv')
 df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/tensorflow_experiment_merged.csv')
 
-df = df.sort_values(['train_enqueue_threads', 'batch_interval'])
+df = df.sort_values(['batch_interval'])
+# df = df.sort_values(['train_enqueue_threads'])
 
 # df = df.drop(df[df.optimizer == 'sgd'].index)
 

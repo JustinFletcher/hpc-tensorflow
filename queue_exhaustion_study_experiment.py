@@ -118,7 +118,6 @@ def tensorflow_experiment():
             # If we have reached a testing interval, test.
             if (i % FLAGS.test_interval == 0):
 
-
                 # Measure the pre-optimize queue size and store it.
                 current_queue_size = sess.run(qr)
 
@@ -142,6 +141,8 @@ def tensorflow_experiment():
                 val_errors.append(val_error)
                 mean_running_times.append(np.mean(running_times))
                 queue_sizes.append(current_queue_size)
+
+                running_times = []
 
                 # Print relevant values.
                 # print('%d | %.6f | %.2f | %.6f | %.2f | %.6f | %.2f'
