@@ -167,6 +167,12 @@ for i, row_level in enumerate(row_levels):
         queue_size_mean = run_df.groupby(['step_num'])['queue_size'].mean().tolist()
         queue_size_std = run_df.groupby(['step_num'])['queue_size'].std().tolist()
 
+        mean_dequeue_rate_mean = run_df.groupby(['step_num'])['mean_dequeue_rate'].mean().tolist()
+        mean_dequeue_rate_std = run_df.groupby(['step_num'])['mean_dequeue_rate'].std().tolist()
+
+        mean_enqueue_rate_mean = run_df.groupby(['step_num'])['mean_dequeue_rate'].mean().tolist()
+        mean_enqueue_rate_std = run_df.groupby(['step_num'])['mean_dequeue_rate'].std().tolist()
+
         # val_loss_mean = run_df.groupby(['step_num'])['val_loss'].mean().tolist()
         # val_loss_std = run_df.groupby(['step_num'])['val_loss'].std().tolist()
 

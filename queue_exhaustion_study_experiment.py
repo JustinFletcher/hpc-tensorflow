@@ -211,7 +211,7 @@ def tensorflow_experiment():
                                                              mean_running_times,
                                                              queue_sizes,
                                                              mean_enqueue_rates,
-                                                             mean_enqueue_rates):
+                                                             mean_dequeue_rates):
 
             # Write the data to a csv.
             csvwriter.writerow([step,

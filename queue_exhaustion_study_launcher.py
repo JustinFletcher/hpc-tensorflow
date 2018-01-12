@@ -49,7 +49,9 @@ def main(FLAGS):
                        'val_loss',
                        'val_error',
                        'mean_running_time',
-                       'queue_size']
+                       'queue_size',
+                       'mean_enqueue_rate',
+                       'mean_dequeue_rate']
 
     # Wait for the output to return.
     exp.join_job_output(FLAGS.log_dir,
