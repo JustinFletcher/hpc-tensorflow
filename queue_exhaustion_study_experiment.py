@@ -79,7 +79,7 @@ def tensorflow_experiment():
         # test_writer = tf.summary.FileWriter(FLAGS.log_dir + '/test')
 
         # Declare timekeeping vars.
-        running_times = [0]
+        running_times = [0.0001]
         net_enqueue_rates = [0]
         running_time = 0
 
