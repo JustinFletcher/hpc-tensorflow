@@ -153,7 +153,6 @@ def tensorflow_experiment():
                 mean_enqueue_rates.append(mean_net_enqueue_rate + mean_dequeue_rate)
                 mean_dequeue_rates.append(mean_dequeue_rate)
 
-
                 current_queue_size = sess.run(qr)
                 queue_sizes.append(current_queue_size)
 
@@ -184,7 +183,7 @@ def tensorflow_experiment():
             final_queue_size_net = sess.run(qr)
 
             # Compute and append the dequeue rate.
-            net_enqueue_rate = (current_queue_size_net - final_queue_size_net) / running_time
+            net_enqueue_rate = (final_queue_size_net - current_queue_size_net) / running_time
             net_enqueue_rates.append(net_enqueue_rate)
 
         print("----------------------------------------")
