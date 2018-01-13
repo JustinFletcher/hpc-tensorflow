@@ -243,7 +243,7 @@ if __name__ == '__main__':
                         default='../log/tensorflow_experiment/templog',
                         help='Summaries log directory.')
 
-    parser.add_argument('--pause_time', type=str,
+    parser.add_argument('--pause_time', type=float,
                         default=0.0,
                         help='Number of seconds to pause before execution.')
 

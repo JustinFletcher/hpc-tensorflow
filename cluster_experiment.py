@@ -200,7 +200,7 @@ class ClusterExperiment(object):
 
                 # Send job_string to qsub.
                 self._job_ids.append(p.communicate(job_string)[0])
-                time.sleep(1)
+                time.sleep(0.1)
 
             else:
 
