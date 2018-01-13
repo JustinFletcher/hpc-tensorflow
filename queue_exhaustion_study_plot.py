@@ -170,8 +170,8 @@ for i, row_level in enumerate(row_levels):
         mean_dequeue_rate_mean = run_df.groupby(['step_num'])['mean_dequeue_rate'].mean().tolist()
         mean_dequeue_rate_std = run_df.groupby(['step_num'])['mean_dequeue_rate'].std().tolist()
 
-        mean_enqueue_rate_mean = run_df.groupby(['step_num'])['mean_dequeue_rate'].mean().tolist()
-        mean_enqueue_rate_std = run_df.groupby(['step_num'])['mean_dequeue_rate'].std().tolist()
+        mean_enqueue_rate_mean = run_df.groupby(['step_num'])['mean_enqueue_rate'].mean().tolist()
+        mean_enqueue_rate_std = run_df.groupby(['step_num'])['mean_enqueue_rate'].std().tolist()
 
         # val_loss_mean = run_df.groupby(['step_num'])['val_loss'].mean().tolist()
         # val_loss_std = run_df.groupby(['step_num'])['val_loss'].std().tolist()
@@ -204,7 +204,7 @@ for i, row_level in enumerate(row_levels):
                       time=step,
                       data1=mrt_mean,
                       data1bar=mrt_std,
-                      data2=queue_size_mean,
+                      data2=[e/d for (e, d) in zip(mean_enqueue_rate_mean, mean_dequeue_rate_mean)],
                       c1='r',
                       c2='b',
                       xmin=0,
@@ -212,7 +212,7 @@ for i, row_level in enumerate(row_levels):
                       ymin2=0,
                       xmax=1000,
                       ymax1=0.1,
-                      ymax2=100000)
+                      ymax2=10)
 
         # line, = ax.plot(step,
         #                 mrt_mean,

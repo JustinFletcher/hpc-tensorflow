@@ -24,11 +24,10 @@ def main(FLAGS):
 
     # Set the number of reps for each config.
     exp.set_rep_count(5)
-
     # Set independent parameters.
     exp.add_design('train_batch_size', [256])
-    exp.add_design('batch_interval', [1, 2, 4, 8, 32, 128])
-    exp.add_design('train_enqueue_threads', [1, 10, 50, 100])
+    exp.add_design('batch_interval', [1, 2, 4, 8, 16, 32, 64, 128])
+    exp.add_design('train_enqueue_threads', [1, 2, 4, 8, 16, 32, 64, 128])
     exp.add_design('learning_rate', [0.0001])
     exp.add_design('max_steps', [1000])
     exp.add_design('test_interval', [100])
