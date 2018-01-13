@@ -205,6 +205,7 @@ for i, row_level in enumerate(row_levels):
                       data1=mrt_mean,
                       data1bar=mrt_std,
                       data2=[e/d for (e, d) in zip(mean_enqueue_rate_mean, mean_dequeue_rate_mean)],
+                      # data2=queue_size_mean,
                       c1='r',
                       c2='b',
                       xmin=0,

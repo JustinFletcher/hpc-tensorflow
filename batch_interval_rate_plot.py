@@ -15,6 +15,7 @@ plt.style.use('seaborn-whitegrid')
 df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/tensorflow_experiment_merged.csv')
 
 df = df.loc[(df.step_num != 0)]
+# df = df.loc[(df.queue_size == 100000)]
 
 df = df.sort_values(['batch_interval', 'train_enqueue_threads'])
 
@@ -30,11 +31,13 @@ batch_intervals = df_bi_grouped['batch_interval'].mean().tolist()
 ax.scatter(batch_intervals,
            mean_dequeue_rate_mean,
            color='r',
+           label="Mean Dequeue Rate",
            alpha=0.3)
 
 ax.scatter(batch_intervals,
            mean_enqueue_rate_mean,
            color='b',
+           label="Mean Enqueue Rate",
            alpha=0.3)
 
 
@@ -44,7 +47,10 @@ plt.suptitle("Comparative Results oif Syanptic Annealing and Stochastic Gradient
 #             dpi=600,
 #             bbox_inches='tight',
 #             pad_inches=0.05)
+plt.legend()
+
 plt.show()
+
 
 # df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/queue_exhaustion_study.csv')
 df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/tensorflow_experiment_merged.csv')
@@ -64,11 +70,13 @@ train_enqueue_threads = df_enqueue_thread_grouped['train_enqueue_threads'].mean(
 
 ax.scatter(train_enqueue_threads,
            mean_dequeue_rate_mean,
+           label="Mean Dequeue Rate",
            color='r',
            alpha=0.3)
 
 ax.scatter(train_enqueue_threads,
            mean_enqueue_rate_mean,
+           label="Mean Enqueue Rate",
            color='b',
            alpha=0.3)
 
@@ -78,4 +86,6 @@ plt.suptitle("Comparative Results oif Syanptic Annealing and Stochastic Gradient
 #             dpi=600,
 #             bbox_inches='tight',
 #             pad_inches=0.05)
+
+plt.legend()
 plt.show()

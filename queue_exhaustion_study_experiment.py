@@ -97,6 +97,8 @@ def tensorflow_experiment():
                     model.target_placeholder: val_labels,
                     model.keep_prob: 1.0}
 
+        time.sleep(FLAGS.pause_time)
+
         # Iterate until max steps.
         for i in range(FLAGS.max_steps):
 
@@ -240,6 +242,10 @@ if __name__ == '__main__':
     parser.add_argument('--log_dir', type=str,
                         default='../log/tensorflow_experiment/templog',
                         help='Summaries log directory.')
+
+    parser.add_argument('--pause_time', type=str,
+                        default=0.0,
+                        help='Number of seconds to pause before execution.')
 
     parser.add_argument('--log_filename', type=str,
                         default='deep_sa_generalization_experiment.csv',
