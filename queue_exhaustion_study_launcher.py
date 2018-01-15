@@ -23,15 +23,15 @@ def main(FLAGS):
     exp = ClusterExperiment()
 
     # Set the number of reps for each config.
-    exp.set_rep_count(3)
+    exp.set_rep_count(10)
     # Set independent parameters.
     exp.add_design('train_batch_size', [256])
     exp.add_design('batch_interval', [1, 2, 4, 8, 16, 32, 64, 128])
     exp.add_design('train_enqueue_threads', [1, 2, 4, 8, 16, 32, 64, 128])
     exp.add_design('learning_rate', [0.0001])
-    exp.add_design('max_steps', [1000])
-    exp.add_design('test_interval', [10])
-    exp.add_design('pause_time', [0, 1, 10])
+    exp.add_design('max_steps', [10000])
+    exp.add_design('test_interval', [100])
+    exp.add_design('pause_time', [10])
 
     # Launch the experiment.
     exp.launch_experiment(exp_filename=FLAGS.experiment_py_file,

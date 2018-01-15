@@ -11,8 +11,8 @@ matplotlib.rcParams.update({'font.size': 6})
 
 plt.style.use('seaborn-whitegrid')
 
-# df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/queue_exhaustion_study.csv')
-df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/tensorflow_experiment_merged.csv')
+df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/queue_exhaustion_study.csv')
+# df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/tensorflow_experiment_merged.csv')
 
 df = df.loc[(df.step_num != 0)]
 # df = df.loc[(df.queue_size == 100000)]
@@ -52,8 +52,8 @@ plt.legend()
 plt.show()
 
 
-# df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/queue_exhaustion_study.csv')
-df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/tensorflow_experiment_merged.csv')
+df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/queue_exhaustion_study.csv')
+# df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/tensorflow_experiment_merged.csv')
 
 df = df.loc[(df.step_num != 0)]
 
