@@ -176,8 +176,7 @@ class ClusterExperiment(object):
 
                 job_string += command
 
-
-
+                # Remove below.
                 job_string = """#!/bin/bash
                 #PBS -N %s
                 #PBS -l walltime=%s

@@ -75,20 +75,20 @@ def bar_line_plot(ax1,
         ax1.xaxis.set_ticklabels([])
 
     if show_ylabel_1:
-        ax1.set_ylabel('Queue Size')
+        ax1.set_ylabel('Queue Size (images)')
     else:
         ax1.yaxis.set_ticklabels([])
 
     ax1.set_xlim(xmin, xmax)
     ax1.set_ylim(ymin2, ymax2)
 
-    line, = ax2.plot(step,
+    line, = ax2.plot(time,
                      data1,
                      color=c1,
                      alpha=0.5,
                      zorder=0)
 
-    errorfill(step,
+    errorfill(time,
               data1,
               data1bar,
               color=line.get_color(),
@@ -96,7 +96,7 @@ def bar_line_plot(ax1,
               ax=ax2)
 
     if show_ylabel_2:
-        ax2.set_ylabel('Mean Single \n Batch Inference \n Running Time')
+        ax2.set_ylabel('Mean Single-Step \n Running Time (sec)')
     else:
         ax2.yaxis.set_ticklabels([])
 
@@ -138,335 +138,592 @@ def errorfill(x, y, yerr, color=None, alpha_fill=0.3, ax=None):
 
 
 # -------------------------------------------------
+# -------------------------------------------------
+# -----------Single Plot Example-------------------
+# -------------------------------------------------
+# -------------------------------------------------
 
+def single_plot_example():
 
-matplotlib.rcParams['text.usetex'] = True
-matplotlib.rcParams['text.latex.unicode'] = True
-matplotlib.rcParams.update({'font.size': 6})
+    matplotlib.rcParams['text.usetex'] = True
+    matplotlib.rcParams['text.latex.unicode'] = True
+    matplotlib.rcParams.update({'font.size': 12})
 
-plt.style.use('seaborn-whitegrid')
+    plt.style.use('seaborn-whitegrid')
 
-df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/queue_exhaustion_study.csv')
-# df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/tensorflow_experiment_merged.csv')
+    df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/queue_exhaustion_study.csv')
+    df = df.sort_values(['batch_interval', 'train_enqueue_threads'])
 
-df = df.sort_values(['batch_interval', 'train_enqueue_threads'])
+    df = df.loc[(df.batch_interval == 1)]
+    df = df.loc[(df.train_enqueue_threads == 2)]
 
-df = df.loc[(df.step_num > 30)]
-df = df.loc[(df.pause_time == 10)]
+    # df = df.loc[(df.rep_num == 0)]
 
-df = df.loc[(df.queue_size > 100)]
-df = df.loc[(df.queue_size < 99500)]
+    row_content = df.train_enqueue_threads
+    row_levels = row_content.unique()
 
-row_content = df.train_enqueue_threads
-row_levels = row_content.unique()
+    col_content = df.batch_interval
+    col_levels = col_content.unique()
 
-col_content = df.batch_interval
-col_levels = col_content.unique()
+    intraplot_content = df.train_batch_size
+    intraplot_levels = intraplot_content.unique()
 
-intraplot_content = df.train_batch_size
-intraplot_levels = intraplot_content.unique()
+    fig = plt.figure()
 
+    plot_num = 0
 
-enqueue_rates = []
-X = []
-Y = []
+    for i, row_level in enumerate(row_levels):
 
-for i, row_level in enumerate(row_levels):
+        for j, col_level in enumerate(col_levels):
 
-    for j, col_level in enumerate(col_levels):
+            plot_num += 1
 
-        run_df = df.loc[(row_content == row_level) &
-                        (col_content == col_level)]
+            # Create scatter axis here.
 
-        queue_size_mean = run_df.groupby(['step_num'])['queue_size'].mean().tolist()
-        queue_size_std = run_df.groupby(['step_num'])['queue_size'].std().tolist()
-        enqueue_rate = (queue_size_mean[-1] - queue_size_mean[0]) / (len(queue_size_mean))
-        enqueue_rates.append(enqueue_rate)
-        X.append(row_level)
-        Y.append(col_level)
+            ax = fig.add_subplot(len(row_levels),
+                                 len(col_levels),
+                                 plot_num)
 
-fig = plt.figure()
-ax = fig.gca(projection='3d')
+            ax.set_rasterization_zorder(1)
 
-surf = ax.plot_trisurf(X,
-                       Y,
-                       enqueue_rates,
-                       cmap=cm.coolwarm,
-                       linewidth=0.1,
-                       antialiased=True)
+            show_xlabel = len(row_levels) == (i + 1)
 
-fig.colorbar(surf, shrink=0.5, aspect=5)
-plt.show()
+            show_ylabel_1 = j == 0
+            show_ylabel_2 = len(col_levels) == (j + 1)
+
+            annotate_col = False
+            col_annotation = r'Batch Interval $ = ' + str(col_level) + '$'
+
+            annotate_row = False
+            row_annotation = r'Threads $=' + str(row_level) + ' $ '
+
+            run_df = df.loc[(row_content == row_level) &
+                            (col_content == col_level)]
+
+            mrt_mean = run_df.groupby(['step_num'])['mean_running_time'].mean().tolist()
+            mrt_std = run_df.groupby(['step_num'])['mean_running_time'].std().tolist()
+
+            queue_size_mean = run_df.groupby(['step_num'])['queue_size'].mean().tolist()
+            queue_size_std = run_df.groupby(['step_num'])['queue_size'].std().tolist()
+
+            step = run_df['step_num']
+            step = run_df.groupby(['step_num'])['step_num'].mean().tolist()
+
+            bar_line_plot(ax1=ax,
+                          time=step,
+                          data1=mrt_mean,
+                          data1bar=mrt_std,
+                          data2=queue_size_mean,
+                          c1='r',
+                          c2='b',
+                          xmin=0,
+                          ymin1=0,
+                          ymin2=0,
+                          xmax=1000,
+                          ymax1=0.1,
+                          ymax2=100000,
+                          show_xlabel=show_xlabel,
+                          show_ylabel_1=show_ylabel_1,
+                          show_ylabel_2=show_ylabel_2,
+                          annotate_col=annotate_col,
+                          col_annotation=col_annotation,
+                          annotate_row=annotate_row,
+                          row_annotation=row_annotation)
+
+            plt.legend()
+
+    plt.grid(True,
+             zorder=0)
+
+    plt.legend(bbox_to_anchor=(0.5, 0.0),
+               loc="lower left",
+               mode="expand",
+               bbox_transform=fig.transFigure,
+               borderaxespad=0,
+               ncol=3)
+
+    # plt.tight_layout(rect=(0.001, 0.001, 1.0, 1.0))
+
+    fig.set_size_inches(16, 9)
+
+    plt.suptitle(r"Running Time ($\mu\pm\sigma$, $n=30$) and Queue Size ($\mu$) vs. Training Step ($I_B = 1$, Threads $= 2$)")
+    # fig.savefig('C:\\Users\\Justi\\Research\\61\\synaptic_annealing\\figures\\deep_sa_comparative_study.eps',
+    #             rasterized=True,
+    #             dpi=600,
+    #             bbox_inches='tight',
+    #             pad_inches=0.05)
+    plt.show()
+
 
 
 # -------------------------------------------------
-
-
+# -------------------------------------------------
+# ----------Thread Count Column--------------------
 # -------------------------------------------------
 
 
-matplotlib.rcParams['text.usetex'] = True
-matplotlib.rcParams['text.latex.unicode'] = True
-matplotlib.rcParams.update({'font.size': 6})
+def thread_count_col():
 
-plt.style.use('seaborn-whitegrid')
+    matplotlib.rcParams['text.usetex'] = True
+    matplotlib.rcParams['text.latex.unicode'] = True
+    matplotlib.rcParams.update({'font.size': 6})
 
-df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/queue_exhaustion_study.csv')
-# df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/tensorflow_experiment_merged.csv')
+    plt.style.use('seaborn-whitegrid')
 
-df = df.sort_values(['batch_interval', 'train_enqueue_threads'])
+    df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/queue_exhaustion_study.csv')
+    df = df.sort_values(['batch_interval', 'train_enqueue_threads'])
 
-df = df.loc[(df.step_num > 30)]
-df = df.loc[(df.pause_time == 10)]
+    df = df.loc[(df.batch_interval == 1)]
+    df = df.loc[(df.train_enqueue_threads != 128)]
+
+    # df = df.loc[(df.rep_num == 0)]
+
+    row_content = df.train_enqueue_threads
+    row_levels = row_content.unique()
+
+    col_content = df.batch_interval
+    col_levels = col_content.unique()
+
+    fig = plt.figure()
+
+    plot_num = 0
+
+    for i, row_level in enumerate(row_levels):
+
+        for j, col_level in enumerate(col_levels):
+
+            plot_num += 1
+
+            # Create scatter axis here.
+
+            ax = fig.add_subplot(len(row_levels),
+                                 len(col_levels),
+                                 plot_num)
+
+            ax.set_rasterization_zorder(1)
+
+            show_xlabel = len(row_levels) == (i + 1)
+
+            show_ylabel_1 = j == 0
+            show_ylabel_2 = len(col_levels) == (j + 1)
+
+            annotate_col = i == 0
+            col_annotation = r'Batch Interval $ = ' + str(col_level) + '$'
+
+            annotate_row = j == 0
+            row_annotation = r'Threads $=' + str(row_level) + ' $ '
+
+            run_df = df.loc[(row_content == row_level) &
+                            (col_content == col_level)]
+
+            mrt_mean = run_df.groupby(['step_num'])['mean_running_time'].mean().tolist()
+            mrt_std = run_df.groupby(['step_num'])['mean_running_time'].std().tolist()
+
+            queue_size_mean = run_df.groupby(['step_num'])['queue_size'].mean().tolist()
+            queue_size_std = run_df.groupby(['step_num'])['queue_size'].std().tolist()
+
+            step = run_df['step_num']
+            step = run_df.groupby(['step_num'])['step_num'].mean().tolist()
+
+            bar_line_plot(ax1=ax,
+                          time=step,
+                          data1=mrt_mean,
+                          data1bar=mrt_std,
+                          data2=queue_size_mean,
+                          c1='r',
+                          c2='b',
+                          xmin=0,
+                          ymin1=0,
+                          ymin2=0,
+                          xmax=2500,
+                          ymax1=0.1,
+                          ymax2=100000,
+                          show_xlabel=show_xlabel,
+                          show_ylabel_1=show_ylabel_1,
+                          show_ylabel_2=show_ylabel_2,
+                          annotate_col=annotate_col,
+                          col_annotation=col_annotation,
+                          annotate_row=annotate_row,
+                          row_annotation=row_annotation)
+
+            plt.legend()
+
+    plt.grid(True,
+             zorder=0)
+
+    plt.legend(bbox_to_anchor=(0.5, 0.0),
+               loc="lower left",
+               mode="expand",
+               bbox_transform=fig.transFigure,
+               borderaxespad=0,
+               ncol=3)
+
+    # plt.tight_layout(rect=(0.001, 0.001, 1.0, 1.0))
+
+    fig.set_size_inches(6, 9)
+
+    plt.suptitle(r"Running Time ($\mu\pm\sigma$) and Queue Size vs. Training Step")
+    # fig.savefig('C:\\Users\\Justi\\Research\\61\\synaptic_annealing\\figures\\deep_sa_comparative_study.eps',
+    #             rasterized=True,
+    #             dpi=600,
+    #             bbox_inches='tight',
+    #             pad_inches=0.05)
+    plt.show()
 
 
-row_content = df.train_enqueue_threads
-row_levels = row_content.unique()
-
-col_content = df.batch_interval
-col_levels = col_content.unique()
-
-intraplot_content = df.train_batch_size
-intraplot_levels = intraplot_content.unique()
 
 
-mean_running_times = []
-X = []
-Y = []
+# -------------------------------------------------
+# -------------------------------------------------
+# -------------------------------------------------
+# -------------------------------------------------
+# -------------------------------------------------
 
-for i, row_level in enumerate(row_levels):
+def batch_interval_vs_threads_plot():
 
-    for j, col_level in enumerate(col_levels):
+    matplotlib.rcParams['text.usetex'] = True
+    matplotlib.rcParams['text.latex.unicode'] = True
+    matplotlib.rcParams.update({'font.size': 6})
 
-        run_df = df.loc[(row_content == row_level) &
-                        (col_content == col_level)]
+    plt.style.use('seaborn-whitegrid')
+
+    df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/queue_exhaustion_study.csv')
+    df = df.sort_values(['batch_interval', 'train_enqueue_threads'])
+
+    df = df.loc[(df.batch_interval != 128)]
+    df = df.loc[(df.train_enqueue_threads != 128)]
+
+
+    row_content = df.train_enqueue_threads
+    row_levels = row_content.unique()
+
+    col_content = df.batch_interval
+    col_levels = col_content.unique()
+
+    intraplot_content = df.train_batch_size
+    intraplot_levels = intraplot_content.unique()
+
+
+    fig = plt.figure()
+
+    plot_num = 0
+
+    for i, row_level in enumerate(row_levels):
+
+        for j, col_level in enumerate(col_levels):
+
+            plot_num += 1
+
+            # Create scatter axis here.
+
+            ax = fig.add_subplot(len(row_levels),
+                                 len(col_levels),
+                                 plot_num)
+
+            ax.set_rasterization_zorder(1)
+
+            show_xlabel = len(row_levels) == (i + 1)
+
+            show_ylabel_1 = j == 0
+            show_ylabel_2 = len(col_levels) == (j + 1)
+
+            annotate_col = i == 0
+            col_annotation = r'Batch Interval $ = ' + str(col_level) + '$'
+
+            annotate_row = j == 0
+            row_annotation = r'Threads $=' + str(row_level) + ' $ '
+
+            run_df = df.loc[(row_content == row_level) &
+                            (col_content == col_level)]
+
+            mrt_mean = run_df.groupby(['step_num'])['mean_running_time'].mean().tolist()
+            mrt_std = run_df.groupby(['step_num'])['mean_running_time'].std().tolist()
+
+            queue_size_mean = run_df.groupby(['step_num'])['queue_size'].mean().tolist()
+            queue_size_std = run_df.groupby(['step_num'])['queue_size'].std().tolist()
+
+            step = run_df['step_num']
+            step = run_df.groupby(['step_num'])['step_num'].mean().tolist()
+
+            bar_line_plot(ax1=ax,
+                          time=step,
+                          data1=mrt_mean,
+                          data1bar=mrt_std,
+                          data2=queue_size_mean,
+                          c1='r',
+                          c2='b',
+                          xmin=0,
+                          ymin1=0,
+                          ymin2=0,
+                          xmax=1000,
+                          ymax1=0.1,
+                          ymax2=100000,
+                          show_xlabel=show_xlabel,
+                          show_ylabel_1=show_ylabel_1,
+                          show_ylabel_2=show_ylabel_2,
+                          annotate_col=annotate_col,
+                          col_annotation=col_annotation,
+                          annotate_row=annotate_row,
+                          row_annotation=row_annotation)
+
+            plt.legend()
+
+    plt.grid(True,
+             zorder=0)
+
+    plt.legend(bbox_to_anchor=(0.5, 0.0),
+               loc="lower left",
+               mode="expand",
+               bbox_transform=fig.transFigure,
+               borderaxespad=0,
+               ncol=7)
+
+    plt.tight_layout(pad=0.0, w_pad=0.0, h_pad=0.0)
+
+    fig.set_size_inches(16, 9)
+
+    plt.suptitle("Queue Size and Single-Step Running Time for Combinations of Batch Interval and Enqueue Threads")
+    # fig.savefig('C:\\Users\\Justi\\Research\\61\\synaptic_annealing\\figures\\deep_sa_comparative_study.eps',
+    #             rasterized=True,
+    #             dpi=600,
+    #             bbox_inches='tight',
+    #             pad_inches=0.05)
+    plt.show()
+
+
+
+# -------------------------------------------------
+# -------------------------------------------------
+# -------------------------------------------------
+# -------------------------------------------------
+
+def queue_rate_surface():
+
+    matplotlib.rcParams['text.usetex'] = True
+    matplotlib.rcParams['text.latex.unicode'] = True
+    matplotlib.rcParams.update({'font.size': 6})
+
+    plt.style.use('seaborn-whitegrid')
+
+    df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/queue_exhaustion_study.csv')
+    # df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/tensorflow_experiment_merged.csv')
+
+    df = df.sort_values(['batch_interval', 'train_enqueue_threads'])
+
+
+    df = df.loc[(df.batch_interval != 128)]
+    df = df.loc[(df.train_enqueue_threads != 128)]
+
+    df = df.loc[(df.queue_size > 50)]
+    df = df.loc[(df.queue_size < 99500)]
+
+    row_content = df.train_enqueue_threads
+    row_levels = row_content.unique()
+
+    col_content = df.batch_interval
+    col_levels = col_content.unique()
+
+    intraplot_content = df.train_batch_size
+    intraplot_levels = intraplot_content.unique()
+
+
+    enqueue_rates = []
+    X = []
+    Y = []
+
+    for i, row_level in enumerate(row_levels):
+
+        for j, col_level in enumerate(col_levels):
+
+            run_df = df.loc[(row_content == row_level) &
+                            (col_content == col_level)]
+
+            queue_size_mean = run_df.groupby(['step_num'])['queue_size'].mean().tolist()
+            queue_size_std = run_df.groupby(['step_num'])['queue_size'].std().tolist()
+            enqueue_rate = (queue_size_mean[-1] - queue_size_mean[0]) / (len(queue_size_mean))
+            enqueue_rates.append(enqueue_rate)
+            X.append(row_level)
+            Y.append(col_level)
+
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+
+    surf = ax.plot_trisurf(X,
+                           Y,
+                           enqueue_rates,
+                           cmap=cm.coolwarm,
+                           linewidth=0.1,
+                           antialiased=True)
+
+    fig.colorbar(surf, shrink=0.5, aspect=5)
+    plt.show()
+
+
+
+# -------------------------------------------------
+# -------------------------------------------------
+# -------------------------------------------------
+# -------------------------------------------------
+# -------------------------------------------------
+
+def running_time_surface():
+
+    matplotlib.rcParams['text.usetex'] = True
+    matplotlib.rcParams['text.latex.unicode'] = True
+    matplotlib.rcParams.update({'font.size': 6})
+
+    plt.style.use('seaborn-whitegrid')
+
+    df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/queue_exhaustion_study.csv')
+    # df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/tensorflow_experiment_merged.csv')
+
+    df = df.sort_values(['batch_interval', 'train_enqueue_threads'])
+
+    df = df.loc[(df.batch_interval != 128)]
+    df = df.loc[(df.train_enqueue_threads != 128)]
+
+    row_content = df.train_enqueue_threads
+    row_levels = row_content.unique()
+
+    col_content = df.batch_interval
+    col_levels = col_content.unique()
+
+    intraplot_content = df.train_batch_size
+    intraplot_levels = intraplot_content.unique()
+
+
+    mean_running_times = []
+    X = []
+    Y = []
+
+    for i, row_level in enumerate(row_levels):
+
+        for j, col_level in enumerate(col_levels):
+
+            run_df = df.loc[(row_content == row_level) &
+                            (col_content == col_level)]
+
+            mean_running_time_mean = run_df['mean_running_time'].mean()
+            mean_running_time_std = run_df['mean_running_time'].std()
+            mean_running_times.append(mean_running_time_mean)
+            X.append(row_level)
+            Y.append(col_level)
+
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+
+    surf = ax.plot_trisurf(X,
+                           Y,
+                           mean_running_times,
+                           cmap=cm.coolwarm,
+                           linewidth=0.1,
+                           antialiased=True)
+
+    fig.colorbar(surf, shrink=0.5, aspect=5)
+    plt.show()
+
+
+
+# -------------------------------------------------
+# -------------------------------------------------
+# -------------------------------------------------
+# -------------------------------------------------
+# -------------------------------------------------
+# -------------------------------------------------
+# -------------------------------------------------
+# -------------------------------------------------
+
+def generalization_stability_plot():
+
+    matplotlib.rcParams['text.usetex'] = True
+    matplotlib.rcParams['text.latex.unicode'] = True
+    matplotlib.rcParams.update({'font.size': 12})
+
+    plt.style.use('seaborn-whitegrid')
+
+    df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/queue_exhaustion_study.csv')
+    # df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/tensorflow_experiment_merged.csv')
+
+    df = df.sort_values(['batch_interval', 'train_enqueue_threads'])
+
+    df = df.loc[(df.step_num > 30)]
+    df = df.loc[(df.pause_time == 10)]
+
+    df = df.loc[(df.batch_interval != 128)]
+    df = df.loc[(df.train_enqueue_threads != 128)]
+    # df = df.loc[(df.train_enqueue_threads == 64)]
+
+    row_content = df.batch_interval
+    row_levels = row_content.unique()
+
+    mean_running_times_means = []
+    mean_running_times_stds = []
+    val_loss_means = []
+    val_loss_stds = []
+
+    for i, row_level in enumerate(row_levels):
+
+        run_df = df.loc[(row_content == row_level)]
+
+        val_loss_mean = run_df.groupby(['step_num'])['val_loss'].mean().tolist()
+        val_loss_std = run_df.groupby(['step_num'])['val_loss'].std().tolist()
+
+        val_loss_means.append(val_loss_mean[-1])
+        val_loss_stds.append(val_loss_std[-1])
 
         mean_running_time_mean = run_df['mean_running_time'].mean()
         mean_running_time_std = run_df['mean_running_time'].std()
-        mean_running_times.append(mean_running_time_mean)
-        X.append(row_level)
-        Y.append(col_level)
 
-fig = plt.figure()
-ax = fig.gca(projection='3d')
+        mean_running_times_means.append(mean_running_time_mean)
+        mean_running_times_stds.append(mean_running_time_std)
 
-surf = ax.plot_trisurf(X,
-                       Y,
-                       mean_running_times,
-                       cmap=cm.coolwarm,
-                       linewidth=0.1,
-                       antialiased=True)
-
-fig.colorbar(surf, shrink=0.5, aspect=5)
-plt.show()
+    fig = plt.figure()
+    ax = fig.gca()
 
 
-# -------------------------------------------------
+    # ax = fig.gca(projection='3d')
 
-# -------------------------------------------------
-
-
-matplotlib.rcParams['text.usetex'] = True
-matplotlib.rcParams['text.latex.unicode'] = True
-matplotlib.rcParams.update({'font.size': 6})
-
-plt.style.use('seaborn-whitegrid')
-
-df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/queue_exhaustion_study.csv')
-# df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/tensorflow_experiment_merged.csv')
-
-df = df.sort_values(['batch_interval', 'train_enqueue_threads'])
-
-df = df.loc[(df.step_num > 30)]
-df = df.loc[(df.pause_time == 10)]
+    # surf = ax.plot_trisurf(X,
+    #                        Y,
+    #                        mean_running_times,
+    #                        cmap=cm.coolwarm,
+    #                        linewidth=0.1,
+    #                        antialiased=True)
 
 
-row_content = df.train_enqueue_threads
-row_levels = row_content.unique()
-
-col_content = df.batch_interval
-col_levels = col_content.unique()
-
-intraplot_content = df.train_batch_size
-intraplot_levels = intraplot_content.unique()
+    # fig.colorbar(surf, shrink=0.5, aspect=5)
 
 
-mean_running_times = []
-X = []
-Y = []
+    for i, row_level in enumerate(row_levels):
 
-for i, row_level in enumerate(row_levels):
+        x = val_loss_means[i]
+        y = mean_running_times_means[i]
 
-    for j, col_level in enumerate(col_levels):
+        xerr = val_loss_stds[i]
+        yerr = mean_running_times_stds[i]
 
-        run_df = df.loc[(row_content == row_level) &
-                        (col_content == col_level)]
+        plt.scatter(x, y, color='black')
 
-        val_loss_mean = run_df.groupby(['step_num'])['val_error'].mean().tolist()
-        val_loss_std = run_df.groupby(['step_num'])['val_loss'].std().tolist()
-        mean_running_times.append(val_loss_mean[-1])
-        X.append(row_level)
-        Y.append(col_level)
+        plt.errorbar(x, y, xerr, yerr, color='black')
 
-fig = plt.figure()
-ax = fig.gca(projection='3d')
+        ax.annotate(r'Batch Interval $ = ' + str(row_level) + '$', (x, y))
 
-surf = ax.plot_trisurf(X,
-                       Y,
-                       mean_running_times,
-                       cmap=cm.coolwarm,
-                       linewidth=0.1,
-                       antialiased=True)
 
-fig.colorbar(surf, shrink=0.5, aspect=5)
-plt.show()
+    ax.set_xlabel('Validation Loss')
+    ax.set_ylabel('Running Time')
+    # plt.legend()
+    plt.show()
 
+
+# Validation set error vs. speedup. Each point a different marker (I_B).
 
 # -------------------------------------------------
+# -------------------------------------------------
+# -------------------------------------------------
 
-
-
-matplotlib.rcParams['text.usetex'] = True
-matplotlib.rcParams['text.latex.unicode'] = True
-matplotlib.rcParams.update({'font.size': 6})
-
-plt.style.use('seaborn-whitegrid')
-
-df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/queue_exhaustion_study.csv')
-# df = pd.read_csv('C:/Users/Justi/Research/log/queue_exhaustion/tensorflow_experiment_merged.csv')
-
-df = df.sort_values(['batch_interval', 'train_enqueue_threads'])
-
-df = df.loc[(df.step_num > 30)]
-df = df.loc[(df.pause_time == 10)]
-
-
-row_content = df.train_enqueue_threads
-row_levels = row_content.unique()
-
-col_content = df.batch_interval
-col_levels = col_content.unique()
-
-intraplot_content = df.train_batch_size
-intraplot_levels = intraplot_content.unique()
-
-
-fig = plt.figure()
-
-plot_num = 0
-
-for i, row_level in enumerate(row_levels):
-
-    for j, col_level in enumerate(col_levels):
-
-        plot_num += 1
-
-        # Create scatter axis here.
-
-        ax = fig.add_subplot(len(row_levels),
-                             len(col_levels),
-                             plot_num)
-
-        ax.set_rasterization_zorder(1)
-
-        show_xlabel = len(row_levels) == (i + 1)
-
-        show_ylabel_1 = j == 0
-        show_ylabel_2 = len(col_levels) == (j + 1)
-
-        annotate_col = i == 0
-        col_annotation = r'Batch Interval $ = ' + str(col_level) + '$'
-
-        annotate_row = j == 0
-        row_annotation = r'Threads $=' + str(row_level) + ' $ '
-
-        # ax.set_xlim(0.00001, 10)
-        # ax.set_ylim(0.001, 1)
-
-        # for k, intraplot_level in enumerate(intraplot_levels):
-
-        run_df = df.loc[(row_content == row_level) &
-                        (col_content == col_level)]
-
-        # run_df = df.loc[(row_content == row_level) &
-        #                 (col_content == col_level) &
-        #                 (intraplot_content == intraplot_level)]
-
-        # if plot_loss:
-
-        # mean_running_time = run_df['mean_running_time'].mean()
-        # print(mean_running_time)
-
-        mrt_mean = run_df.groupby(['step_num'])['mean_running_time'].mean().tolist()
-        mrt_std = run_df.groupby(['step_num'])['mean_running_time'].std().tolist()
-
-        queue_size_mean = run_df.groupby(['step_num'])['queue_size'].mean().tolist()
-        queue_size_std = run_df.groupby(['step_num'])['queue_size'].std().tolist()
-
-        mean_dequeue_rate_mean = run_df.groupby(['step_num'])['mean_dequeue_rate'].mean().tolist()
-        mean_dequeue_rate_std = run_df.groupby(['step_num'])['mean_dequeue_rate'].std().tolist()
-
-        mean_enqueue_rate_mean = run_df.groupby(['step_num'])['mean_enqueue_rate'].mean().tolist()
-        mean_enqueue_rate_std = run_df.groupby(['step_num'])['mean_enqueue_rate'].std().tolist()
-
-        # val_loss_mean = run_df.groupby(['step_num'])['val_loss'].mean().tolist()
-        # val_loss_std = run_df.groupby(['step_num'])['val_loss'].std().tolist()
-
-        # ax.set_yscale("log", nonposx='clip')
-
-        # ax.loglog()
-
-        # ax.set_ylim(0.0, 10000)
-        # ax.set_xlim(1, 1000)
-
-        step = run_df['step_num']
-        step = run_df.groupby(['step_num'])['step_num'].mean().tolist()
-
-        # step = [mean_running_time * s for s in step]
-
-        bar_line_plot(ax1=ax,
-                      time=step,
-                      data1=mrt_mean,
-                      data1bar=mrt_std,
-                      # data2=[e/d for (e, d) in zip(mean_enqueue_rate_mean, mean_dequeue_rate_mean)],
-                      data2=queue_size_mean,
-                      c1='r',
-                      c2='b',
-                      xmin=0,
-                      ymin1=0,
-                      ymin2=0,
-                      xmax=1000,
-                      ymax1=0.1,
-                      ymax2=100000,
-                      show_xlabel=show_xlabel,
-                      show_ylabel_1=show_ylabel_1,
-                      show_ylabel_2=show_ylabel_2,
-                      annotate_col=annotate_col,
-                      col_annotation=col_annotation,
-                      annotate_row=annotate_row,
-                      row_annotation=row_annotation)
-
-        plt.legend()
-
-
-plt.grid(True,
-         zorder=0)
-
-plt.legend(bbox_to_anchor=(0.5, 0.0),
-           loc="lower left",
-           mode="expand",
-           bbox_transform=fig.transFigure,
-           borderaxespad=0,
-           ncol=3)
-
-plt.tight_layout(rect=(0.05, 0.05, 0.95, 0.925))
-
-fig.set_size_inches(16, 9)
-
-plt.suptitle("")
-# fig.savefig('C:\\Users\\Justi\\Research\\61\\synaptic_annealing\\figures\\deep_sa_comparative_study.eps',
-#             rasterized=True,
-#             dpi=600,
-#             bbox_inches='tight',
-#             pad_inches=0.05)
-plt.show()
+single_plot_example()
+# thread_count_col()
+# batch_interval_vs_threads_plot()
+# queue_rate_surface()
+# running_time_surface()
+# generalization_stability_plot()
