@@ -10,7 +10,6 @@ import tensorflow as tf
 from cluster_experiment import ClusterExperiment
 
 
-
 def main(FLAGS):
 
     # Clear and remake the log directory.
@@ -32,6 +31,7 @@ def main(FLAGS):
     exp.add_design('max_steps', [1000])
     exp.add_design('test_interval', [100])
     exp.add_design('pause_time', [10])
+    exp.add_design('model_name', ['lenet'])
 
     # Launch the experiment.
     exp.launch_experiment(exp_filename=FLAGS.experiment_py_file,

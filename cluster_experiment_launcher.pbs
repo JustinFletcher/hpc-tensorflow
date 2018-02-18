@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Walltime in hours:minutes:seconds
-#PBS -l walltime=100:00:00
+#PBS -l walltime=1:00:00
 ## -o specifies output file
 #PBS -o ~/log/queue_exhaustion.out
 ## -e specifies error file
@@ -10,7 +10,6 @@
 ## Enter the proper queue
 #PBS -q standard
 #PBS -A MHPCC96670DA1 
-cp -R ~/data $WORKDIR
 module load anaconda2/5.0.1 gcc/5.3.0 cudnn/6.0
 cd ~/hpc-tensorflow
 python cluster_experiment_launcher.py
