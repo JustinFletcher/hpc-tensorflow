@@ -51,6 +51,10 @@ class MNISTTensorFlowBatchProducer(TensorFlowBatchProducer):
         # Convert from [0, 255] -> [-0.5, 0.5] floats.
         image = tf.cast(image, tf.float32) * (1. / 255) - 0.5
 
+        # resize the image tensors to add channels, 1 in this case
+        # required to pass the images to various layers upcoming in the graph
+        image = tf.reshape(image, [28, 28, 1])
+
         # Convert label from a scalar uint8 tensor to an int32 scalar.
         label_batch = features['label']
 

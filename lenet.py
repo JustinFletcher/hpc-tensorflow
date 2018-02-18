@@ -71,11 +71,6 @@ class LeNetTensorFlowModel(TensorFlowModel):
         zoo.print_tensor_shape(self.stimulus_placeholder, 'images shape')
         zoo.print_tensor_shape(self.target_placeholder, 'label shape')
 
-        # resize the image tensors to add channels, 1 in this case
-        # required to pass the images to various layers upcoming in the graph
-        images_re = tf.reshape(self.stimulus_placeholder, [-1, 28, 28, 1])
-        zoo.print_tensor_shape(images_re, 'reshaped images shape')
-
         # Convolution layer.
         with tf.name_scope('Conv1'):
 
@@ -83,7 +78,7 @@ class LeNetTensorFlowModel(TensorFlowModel):
             # 3rd dim is number of input channels, 4th dim is output channels
             W_conv1 = self._weight_variable([5, 5, 1, 32])
             b_conv1 = self._bias_variable([32])
-            h_conv1 = tf.nn.relu(self._conv2d(images_re, W_conv1) + b_conv1)
+            h_conv1 = tf.nn.relu(self._conv2d(self.stimulus_placeholder, W_conv1) + b_conv1)
             zoo.print_tensor_shape(h_conv1, 'Conv1 shape')
 
         # Pooling layer.

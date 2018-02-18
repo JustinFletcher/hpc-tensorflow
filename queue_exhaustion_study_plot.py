@@ -369,14 +369,14 @@ def thread_count_col():
     plt.grid(True,
              zorder=0)
 
-    ax1.legend(bbox_to_anchor=(0.2, 0.05),
+    ax1.legend(bbox_to_anchor=(0.2, 0.04),
                loc="lower left",
                mode="expand",
                bbox_transform=fig.transFigure,
                borderaxespad=0,
                ncol=3)
 
-    ax2.legend(bbox_to_anchor=(0.6, 0.05),
+    ax2.legend(bbox_to_anchor=(0.6, 0.04),
                loc="lower left",
                mode="expand",
                bbox_transform=fig.transFigure,
@@ -494,7 +494,7 @@ def batch_interval_vs_threads_plot():
 
     plt.grid(True,
              zorder=0)
-    ax1.legend(bbox_to_anchor=(0.37, 0.03),
+    ax1.legend(bbox_to_anchor=(0.34, 0.03),
                loc="lower left",
                mode="expand",
                bbox_transform=fig.transFigure,
@@ -704,8 +704,11 @@ def generalization_stability_plot():
         val_loss_means.append(val_loss_mean[-1])
         val_loss_stds.append(val_loss_std[-1])
 
-        mean_running_time_mean = run_df['mean_running_time'].mean()
-        mean_running_time_std = run_df['mean_running_time'].std()
+        batch_size = run_df['train_batch_size'].mean()
+        mrt = batch_size / run_df['mean_running_time']
+
+        mean_running_time_mean = mrt.mean()
+        mean_running_time_std = mrt.std()
 
         mean_running_times_means.append(mean_running_time_mean)
         mean_running_times_stds.append(mean_running_time_std)
@@ -737,13 +740,13 @@ def generalization_stability_plot():
 
         plt.scatter(x, y, color='black')
 
-        plt.errorbar(x, y, xerr, yerr, color='black')
+        plt.errorbar(x, y, xerr=xerr, yerr=yerr, color='black', capsize=2)
 
         ax.annotate(r'Batch Interval $ = ' + str(row_level) + '$', (x, y))
 
 
-    ax.set_xlabel('Validation Loss')
-    ax.set_ylabel('Running Time')
+    ax.set_xlabel('Validation Loss at Convergence (Step 10000)')
+    ax.set_ylabel('MNIST Images per Second')
     # plt.legend()
     plt.show()
 
@@ -754,9 +757,9 @@ def generalization_stability_plot():
 # -------------------------------------------------
 # -------------------------------------------------
 
-single_plot_example()
+# single_plot_example()
 thread_count_col()
 batch_interval_vs_threads_plot()
-queue_rate_surface()
-running_time_surface()
-generalization_stability_plot()
+# queue_rate_surface()
+# running_time_surface()
+# generalization_stability_plot()

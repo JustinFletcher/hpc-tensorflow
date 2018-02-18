@@ -3,6 +3,7 @@ import tensorflow as tf
 
 # Import all models.
 import lenet
+import alexnet
 
 
 def doublewrap(function):
@@ -70,8 +71,9 @@ class TensorFlowModelZoo(object):
 
         if model_name == 'alexnet':
 
-            print(model_name + " is not yet implemented.")
-            raise NotImplementedError
+            tfmodel = lenet.AlexNetTensorFlowModel()
+
+            return(tfmodel)
 
         if model_name == 'vgg-16':
 
