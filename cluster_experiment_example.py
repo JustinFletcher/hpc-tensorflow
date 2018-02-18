@@ -1,115 +1,19 @@
 
+
 import sys
+import csv
 import time
 import argparse
-import functools
 import numpy as np
 import tensorflow as tf
 
+# Change baseline_model to a model you built with the same interfaces.
+from model_trainer import ModelTrainer
 import tensorflowmodelzoo as zoo
 from mnist_batch_producer import MNISTTensorFlowBatchProducer
 
 
-def doublewrap(function):
-    """
-    A decorator decorator, allowing to use the decorator to be used without
-    parentheses if not arguments are provided. All arguments must be optional.
-    Decorator source:
-    https://gist.github.com/danijar/8663d3bbfd586bffecf6a0094cd116f2
-    """
-    @functools.wraps(function)
-    def decorator(*args, **kwargs):
-        if len(args) == 1 and len(kwargs) == 0 and callable(args[0]):
-            return function(args[0])
-        else:
-            return lambda wrapee: function(wrapee, *args, **kwargs)
-    return decorator
-
-
-@doublewrap
-def define_scope(function, scope=None, *args, **kwargs):
-    """
-    A decorator for functions that define TensorFlow operations. The wrapped
-    function will only be executed once. Subsequent calls to it will directly
-    return the result so that operations are added to the graph only once.
-    The operations added by the function live within a tf.variable_scope(). If
-    this decorator is used with arguments, they will be forwarded to the
-    variable scope. The scope name defaults to the name of the wrapped
-    function.
-    Decorator source:
-    https://gist.github.com/danijar/8663d3bbfd586bffecf6a0094cd116f2
-    Learning TensorFlow, pp 212.
-    """
-    attribute = '_cache_' + function.__name__
-    name = scope or function.__name__
-
-    @property
-    @functools.wraps(function)
-    def decorator(self):
-        if not hasattr(self, attribute):
-            with tf.variable_scope(name, *args, **kwargs):
-                setattr(self, attribute, function(self))
-        return getattr(self, attribute)
-    return decorator
-
-
-class ModelTrainer(object):
-
-    def __init__(self,
-                 model,
-                 data,
-                 learning_rate):
-
-        # Internalize instantiation parameters
-        self.model = model
-        self.data = data
-        self.learning_rate = learning_rate
-
-        # Register instance methods, building the computational graph.
-        self.loss
-        self.optimize
-        self.error
-
-    @define_scope
-    def loss(self):
-
-        # Compute the cross entropy.
-        xe = tf.nn.softmax_cross_entropy_with_logits(
-            labels=self.model.target_placeholder,
-            logits=self.model.inference,
-            name='xentropy')
-
-        # Take the mean of the cross entropy.
-        loss = tf.reduce_mean(xe, name='xentropy_mean')
-
-        return(loss)
-
-    @define_scope
-    def optimize(self):
-
-        # Compute the cross entropy.
-        xe = tf.nn.softmax_cross_entropy_with_logits(
-            labels=self.model.target_placeholder,
-            logits=self.model.inference,
-            name='xentropy')
-
-        # Take the mean of the cross entropy.
-        loss = tf.reduce_mean(xe, name='xentropy_mean')
-
-        # Minimize the loss by incrementally changing trainable variables.
-        return tf.train.AdamOptimizer(self.learning_rate).minimize(loss)
-
-    @define_scope
-    def error(self):
-
-        mistakes = tf.not_equal(tf.argmax(self.model.target_placeholder, 1),
-                                tf.argmax(self.model.inference, 1))
-        error = tf.reduce_mean(tf.cast(mistakes, tf.float32))
-        # tf.summary.scalar('error', error)
-        return(error)
-
-
-def example_usage(_):
+def tensorflow_experiment():
 
     # Clear the log directory, if it exists.
     if tf.gfile.Exists(FLAGS.log_dir):
@@ -134,7 +38,7 @@ def example_usage(_):
     model_zoo = zoo.TensorFlowModelZoo()
     # data_zoo = zoo.TensorFlowDataZoo()
 
-    model = model_zoo.get_model('lenet')
+    model = model_zoo.get_model(FLAGS.model_name)
 
     # TensorFlowModelZoo.get_model() ?
 
@@ -275,6 +179,11 @@ def example_usage(_):
     return()
 
 
+def main(_):
+
+    return(tensorflow_experiment())
+
+
 if __name__ == '__main__':
 
     # Instantiate an arg parser.
@@ -316,7 +225,11 @@ if __name__ == '__main__':
     parser.add_argument('--learning_rate', type=float, default=1e-4,
                         help='Initial learning rate')
 
-    # These flags specify the data used in the experiment.
+    # These flags specify the data used in the experiment
+    parser.add_argument('--model_name', type=str,
+                        default='lenet',
+                        help='The name of the model to get form the zoo.')
+
     parser.add_argument('--data_dir', type=str,
                         default='../data/mnist',
                         help='Directory from which to pull data TFRecords.')
@@ -358,5 +271,5 @@ if __name__ == '__main__':
     # Parse known arguements.
     FLAGS, unparsed = parser.parse_known_args()
 
-    # # Run the main function as TF app.
-    tf.app.run(main=example_usage, argv=[sys.argv[0]] + unparsed)
+    # Run the main function as TF app.
+    tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
