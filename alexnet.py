@@ -220,7 +220,7 @@ def alexnet_v2(inputs,
 alexnet_v2.default_image_size = 224
 
 
-class AlexnetTensorFlowModel(TensorFlowModel):
+class AlexNetTensorFlowModel(TensorFlowModel):
 
     def __init__(self):
 
