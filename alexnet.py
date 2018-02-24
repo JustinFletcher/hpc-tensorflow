@@ -249,9 +249,10 @@ class AlexNetTensorFlowModel(TensorFlowModel):
 
         zoo.print_tensor_shape(images_re, 'reshaped images shape')
 
-        output, end_points = alexnet_v2(self.stimulus_placeholder)
+        # output, end_points = alexnet_v2(self.stimulus_placeholder)
 
-        return(output)
+        with slim.arg_scope(alexnet_v2_arg_scope()):
+            outputs, _ = alexnet_v2(self.stimulus_placeholders)
 
-
+        return(outputs)
         ####################
