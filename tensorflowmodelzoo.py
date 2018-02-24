@@ -71,7 +71,7 @@ class TensorFlowModelZoo(object):
 
         if model_name == 'alexnet':
 
-            tfmodel = lenet.AlexNetTensorFlowModel()
+            tfmodel = alexnet.AlexNetTensorFlowModel()
 
             return(tfmodel)
 
