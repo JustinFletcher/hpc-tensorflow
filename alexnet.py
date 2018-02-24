@@ -252,7 +252,7 @@ class AlexNetTensorFlowModel(TensorFlowModel):
         # output, end_points = alexnet_v2(self.stimulus_placeholder)
 
         with slim.arg_scope(alexnet_v2_arg_scope()):
-            outputs, _ = alexnet_v2(self.stimulus_placeholder)
+            outputs, _ = alexnet_v2(images_re)
 
         return(outputs)
         ####################
