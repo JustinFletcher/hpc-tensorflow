@@ -38,8 +38,6 @@ def tensorflow_experiment():
     model_zoo = zoo.TensorFlowModelZoo()
     # data_zoo = zoo.TensorFlowDataZoo()
 
-    model = model_zoo.get_model(FLAGS.model_name)
-
     # TensorFlowModelZoo.get_model() ?
 
     batch_producer = MNISTTensorFlowBatchProducer(FLAGS.data_dir,
@@ -47,6 +45,8 @@ def tensorflow_experiment():
                                                   FLAGS.validation_file,
                                                   FLAGS.input_size,
                                                   FLAGS.label_size)
+
+    model = model_zoo.get_model(FLAGS.model_name)
 
     model_trainer = ModelTrainer(model=model,
                                  data=batch_producer,
