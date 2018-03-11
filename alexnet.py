@@ -98,7 +98,7 @@ def alexnet_v2_arg_scope(weight_decay=0.0005):
 
 
 def alexnet_v2(inputs,
-               num_classes=1000,
+               num_classes=10,
                is_training=True,
                dropout_keep_prob=0.5,
                spatial_squeeze=True,
@@ -217,8 +217,8 @@ def alexnet_v2(inputs,
             return net, end_points
 
 
-alexnet_v2.default_image_size = 28
-# alexnet_v2.default_image_size = 224
+# alexnet_v2.default_image_size = 28
+alexnet_v2.default_image_size = 224
 
 
 class AlexNetTensorFlowModel(TensorFlowModel):
