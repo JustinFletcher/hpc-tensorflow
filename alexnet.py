@@ -246,14 +246,14 @@ class AlexNetTensorFlowModel(TensorFlowModel):
 
         # resize the image tensors to add channels, 1 in this case
         # required to pass the images to various layers upcoming in the graph
-        images_re = tf.reshape(self.stimulus_placeholder, [128, 28, 28, 1])
+        # images_re = tf.reshape(self.stimulus_placeholder, [128, 28, 28, 1])
 
-        zoo.print_tensor_shape(images_re, 'reshaped images shape')
+        # zoo.print_tensor_shape(images_re, 'reshaped images shape')
 
         # output, end_points = alexnet_v2(self.stimulus_placeholder)
 
         with slim.arg_scope(alexnet_v2_arg_scope()):
-            outputs, _ = alexnet_v2(images_re)
+            outputs, _ = alexnet_v2(inputs=self.stimulus_placeholder)
 
         return(outputs)
         ####################

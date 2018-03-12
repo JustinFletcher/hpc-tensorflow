@@ -61,7 +61,7 @@ def print_tensor_shape(tensor, string):
 
 class TensorFlowModelZoo(object):
 
-    def get_model(self, model_name):
+    def get_model(self, model_name, model_params=[]):
 
         if model_name == 'lenet':
 
