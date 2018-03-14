@@ -12,7 +12,7 @@
 #PBS -A MHPCC96650DE1
 module load bazel/0.9.0
 module load tensorflow/1.4.0
-cd ../../../projects/ml/tfmodels/models/research/inception/
+cd /gpfs/projects/ml/tfmodels/models/research/inception/
 DATA_DIR=/gpfs/projects/ml/data/imagenet-data/
 IMAGENET_USERNAME=justinr.fletcher@gmail.com
 IMAGENET_ACCESS_KEY=Colonel08
