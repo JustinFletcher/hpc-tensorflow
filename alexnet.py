@@ -219,7 +219,7 @@ def alexnet_v2(inputs,
 
 
 # alexnet_v2.default_image_size = 28
-alexnet_v2.default_image_size = 224
+# alexnet_v2.default_image_size = 224
 
 
 class AlexNetTensorFlowModel(TensorFlowModel):
@@ -254,6 +254,6 @@ class AlexNetTensorFlowModel(TensorFlowModel):
         # output, end_points = alexnet_v2(self.stimulus_placeholder)
 
         with slim.arg_scope(alexnet_v2_arg_scope()):
-            outputs, _ = alexnet_v2(inputs=simages_re)
+            outputs, _ = alexnet_v2(inputs=images_re)
         return(outputs)
         ####################
