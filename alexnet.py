@@ -97,6 +97,7 @@ def alexnet_v2_arg_scope(weight_decay=0.0005):
                 return arg_sc
 
 
+@define_scope(initializer=tf.contrib.slim.xavier_initializer())
 def alexnet_v2(inputs,
                num_classes=10,
                is_training=True,
@@ -223,7 +224,7 @@ alexnet_v2.default_image_size = 224
 
 class AlexNetTensorFlowModel(TensorFlowModel):
 
-    def __init__(self):
+    def __init__(self,):
 
         # Build placeholders values which change during execution.
         self.stimulus_placeholder = tf.placeholder(tf.float32)
@@ -246,14 +247,13 @@ class AlexNetTensorFlowModel(TensorFlowModel):
 
         # resize the image tensors to add channels, 1 in this case
         # required to pass the images to various layers upcoming in the graph
-        # images_re = tf.reshape(self.stimulus_placeholder, [128, 28, 28, 1])
+        images_re = tf.reshape(self.stimulus_placeholder, [128, 32, 32, 3])
 
         # zoo.print_tensor_shape(images_re, 'reshaped images shape')
 
         # output, end_points = alexnet_v2(self.stimulus_placeholder)
 
         with slim.arg_scope(alexnet_v2_arg_scope()):
-            outputs, _ = alexnet_v2(inputs=self.stimulus_placeholder)
-
+            outputs, _ = alexnet_v2(inputs=simages_re)
         return(outputs)
         ####################

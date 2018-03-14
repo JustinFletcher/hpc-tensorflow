@@ -16,4 +16,4 @@ cd /gpfs/projects/ml/tfmodels/models/research/inception/
 DATA_DIR=/gpfs/projects/ml/data/imagenet-data/
 IMAGENET_USERNAME=justinr.fletcher@gmail.com
 IMAGENET_ACCESS_KEY=Colonel08
-yes | bazel-bin/inception/download_and_preprocess_imagenet "${DATA_DIR}"
+nohup yes | bazel-bin/inception/download_and_preprocess_imagenet "${DATA_DIR}" &
