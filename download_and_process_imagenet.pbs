@@ -9,7 +9,7 @@
 #PBS -l select=1:mpiprocs=20:ncpus=20
 ## Enter the proper queue
 #PBS -q standard
-#PBS -A HPCC96650DE1
+#PBS -A MHPCC96650DE1
 module load bazel/0.9.0
 module load tensorflow/1.4.0
 cd ../../../projects/ml/tfmodels/models/research/inception/
