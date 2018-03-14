@@ -109,14 +109,44 @@ def darknet(net, classes, num_anchors, training=False, center=True):
         index += 1
         net = slim.layers.conv2d(net, channels, scope='%s/conv%d' % (scope, index))
         index += 1
+
+        # layer 24:
         net = slim.layers.conv2d(net, channels, scope='%s/conv%d' % (scope, index))
+        passthrough2 = tf.identity(net, name=scope + '/passthrough2')
         index += 1
+
+        # channels = 1024 at this point
+
+        # layer 25: route layer 16: feed forward the passthrough layer:
+        # reconfigure inputs weights of passthrough layer (layer 16) from 26x26x256 to 13x13x1024
         with tf.name_scope(scope):
-            _net = reorg(passthrough)
-        net = tf.concat([_net, net], 3, name='%s/concat%d' % (scope, index))
-        net = slim.layers.conv2d(net, channels, scope='%s/conv%d' % (scope, index))
+            passthrough.inputs = net.get_shape()
+            _net = reorg(passthrough,stride=1,name='%s/route%d' % (scope, index))
+        index += 1
+
+        # layer 26: 1x1 convl of 26x26x512 -> 26x26x64to 64 channels: 
+        net = slim.layers.conv2d(_net, 64, kernel_size=[1, 1], scope='%s/conv%d' % (scope, index))
+        index += 1
+
+        # layer 27: reorg layer 26 by stride 2: from 26x26x64 to 13x13x256
+        with tf.name_scope(scope):
+            _net = reorg(net, stride=2, name='%s/reorg%d' % (scope, index))
+        index += 1
+
+        # layer 28: route layers 27 and 24: 
+        net = tf.concat([_net, passthrough2], 3, name='%s/concat%d' % (scope, index))
+        index += 1
+
+        # layer 29: 3x3 convolve 13x13x1280 to 13x13x1024
+        net = slim.layers.conv2d(net, 1024, scope='%s/conv%d' % (scope, index))
+        # index += 1
+
+    # layer 30: convolve with channels = #Anchors * (5+#classes)
     net = slim.layers.conv2d(net, num_anchors * (5 + classes), kernel_size=[1, 1], activation_fn=None, scope='%s/conv' % scope)
+
+    # layer 31: copy output toresult:
     net = tf.identity(net, name='%s/output' % scope)
+
     return scope, net
 
 DARKNET_DOWNSAMPLING = (2 ** 5, 2 ** 5)

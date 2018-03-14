@@ -22,6 +22,8 @@ import importlib
 import itertools
 from PIL import Image, ExifTags
 import numpy as np
+import matplotlib
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import tensorflow as tf
@@ -100,7 +102,7 @@ def main():
         image = tf.placeholder(tf.float32, [1, height, width, 3], name='image')
         builder = yolo.Builder(args, config)
         builder(image)
-        global_step = tf.contrib.framework.get_or_create_global_step()
+        global_step = tf.train.get_or_create_global_step()
         model_path = tf.train.latest_checkpoint(utils.get_logdir(config))
         tf.logging.info('load ' + model_path)
         slim.assign_from_checkpoint_fn(model_path, tf.global_variables())(sess)

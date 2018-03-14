@@ -66,7 +66,7 @@ def main():
     with tf.Session() as sess:
         image = tf.placeholder(tf.float32, [1, height, width, 3], name='image')
         func(image, len(names), len(anchors))
-        tf.contrib.framework.get_or_create_global_step()
+        tf.train.get_or_create_global_step()
         tf.global_variables_initializer().run()
         prog = re.compile(r'[_\w\d]+\/conv(\d*)\/(weights|biases|(BatchNorm\/(gamma|beta|moving_mean|moving_variance)))$')
         variables = [(prog.match(v.op.name).group(1), v) for v in tf.global_variables() if prog.match(v.op.name)]
@@ -78,6 +78,8 @@ def main():
             with open(os.path.expanduser(os.path.expandvars(args.file)), 'rb') as f:
                 major, minor, revision, seen = struct.unpack('4i', f.read(16))
                 tf.logging.info('major=%d, minor=%d, revision=%d, seen=%d' % (major, minor, revision, seen))
+                file_size = os.fstat(f.fileno()).st_size
+                tf.logging.info('file_size=%d' %(file_size))
                 for i, layer in variables:
                     tf.logging.info('processing layer %d' % i)
                     total = 0
