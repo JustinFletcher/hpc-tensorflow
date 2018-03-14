@@ -139,8 +139,8 @@ class CIFAR10TensorFlowBatchProducer(TensorFlowBatchProducer):
                 'label': tf.FixedLenFeature([], tf.int64),
             })
 
-        image, label = self._read_and_decode_cifar10(raw_record=raw_record,
-                                                     is_training=is_training)
+        image, label = self._parse_record(raw_record=raw_record,
+                                          is_training=is_training)
 
         return image, label
 
