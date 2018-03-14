@@ -14,6 +14,6 @@ module load bazel/0.9.0
 module load tensorflow/1.4.0
 cd ../../../projects/ml/tfmodels/models/research/inception/
 DATA_DIR=/gpfs/projects/ml/data/imagenet-data/
-IMAGENET_USERNAME=justinr.fletcher@gamil.com
+IMAGENET_USERNAME=justinr.fletcher@gmail.com
 IMAGENET_ACCESS_KEY=Colonel08
 yes | bazel-bin/inception/download_and_preprocess_imagenet "${DATA_DIR}"
