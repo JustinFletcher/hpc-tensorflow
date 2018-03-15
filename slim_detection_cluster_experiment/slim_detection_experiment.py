@@ -24,6 +24,14 @@ def tensorflow_experiment():
     # Reads summaries to CSVs. #
     ############################
 
+    
+    if tf.gfile.Exists(FLAGS.log_dir):
+
+        tf.gfile.DeleteRecursively(FLAGS.log_dir)
+
+    tf.gfile.MakeDirs(FLAGS.log_dir)
+
+
     # Write the data we saved to a csv file, to be compiled by the launcher.
     with open(FLAGS.log_dir + '/' + FLAGS.log_filename, 'wb') as csvfile:
 
