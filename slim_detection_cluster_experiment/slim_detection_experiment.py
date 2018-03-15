@@ -41,7 +41,7 @@ def tensorflow_experiment():
         row = []
 
         # TODO: Specify path to specific events file.
-        for e in tf.train.summary_iterator(FLAGS.train_dir):
+        for e in tf.train.summary_iterator(FLAGS.train_dir + 'events.out.tfevents.1521127912.hokulea02.mhpcc.hpc.mil'):
 
             for v in e.summary.value:
 
@@ -90,7 +90,7 @@ if __name__ == '__main__':
 
     # Establish default arguements.
     parser.add_argument('--slim_dir', type=str,
-                        default='/gpfs/projects/ml/tfmodels/models/research/slim',
+                        default='/gpfs/projects/ml/tfmodels/models/research/slim/',
                         help='Slim directory.')
 
     parser.add_argument('--slim_train_file', type=str,
@@ -102,12 +102,12 @@ if __name__ == '__main__':
                         help='Slim eval file.')
 
     parser.add_argument('--train_dir', type=str,
-                        default='/gpfs/projects/ml/tfmodels/cifarnet-model',
+                        default='/gpfs/projects/ml/tfmodels/cifarnet-model/',
                         help='Model checkpoint and event directory.')
 
     # These flags are often, but not always, overwritten by the launcher.
     parser.add_argument('--log_dir', type=str,
-                        default='/gpfs/projects/ml/tmp/slim_test',
+                        default='/gpfs/projects/ml/tmp/slim_test/',
                         help='Summaries log directory.')
 
     parser.add_argument('--pause_time', type=float,
