@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Walltime in hours:minutes:seconds
-#PBS -l walltime=72:00:00
+#PBS -l walltime=1:00:00
 ## -o specifies output file
 #PBS -o ~/log/queue_exhaustion.out
 ## -e specifies error file
@@ -10,10 +10,7 @@
 ## Enter the proper queue
 #PBS -q standard
 #PBS -A MHPCC96650DE1
-module load bazel/0.9.0
+# module load anaconda2/5.0.1 gcc/5.3.0 cudnn/6.0
 module load tensorflow/1.4.0
-cd /gpfs/projects/ml/tfmodels/models/research/inception/
-DATA_DIR=/gpfs/projects/ml/data/imagenet-data/
-IMAGENET_USERNAME=justinr.fletcher@gmail.com
-IMAGENET_ACCESS_KEY=Colonel08
-nohup yes | bazel-bin/inception/download_and_preprocess_imagenet ${DATA_DIR} 
+cd ~/hpc-tensorflow
+python cluster_experiment_launcher.py
