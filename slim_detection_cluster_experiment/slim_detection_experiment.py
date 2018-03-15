@@ -43,9 +43,13 @@ def tensorflow_experiment():
         # TODO: Specify path to specific events file.
         for e in tf.train.summary_iterator(FLAGS.train_dir + 'events.out.tfevents.1521127912.hokulea02.mhpcc.hpc.mil'):
 
+            print(e)
+
             for v in e.summary.value:
 
                 # TODO: Add Step.
+
+                print(v)
 
                 if v.tag == 'loss':
                     print(v.simple_value)
