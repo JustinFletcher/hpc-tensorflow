@@ -90,19 +90,19 @@ if __name__ == '__main__':
 
     # Establish default arguements.
     parser.add_argument('--slim_dir', type=str,
-                        default='/gpfs/project/ml/tfmodels/models/research/slim',
+                        default='/gpfs/projects/ml/tfmodels/models/research/slim',
                         help='Slim directory.')
 
     parser.add_argument('--slim_train_file', type=str,
-                        default='/gpfs/project/ml/tfmodels/models/research/slim/train_image_classifier.py',
+                        default='/gpfs/projects/ml/tfmodels/models/research/slim/train_image_classifier.py',
                         help='Slim train file.')
 
     parser.add_argument('--slim_eval_file', type=str,
-                        default='/gpfs/project/ml/tfmodels/models/research/slim/eval_image_classifier.py',
+                        default='/gpfs/projects/ml/tfmodels/models/research/slim/eval_image_classifier.py',
                         help='Slim eval file.')
 
     parser.add_argument('--train_dir', type=str,
-                        default='/gpfs/project/ml/tfmodels/cifarnet-model',
+                        default='/gpfs/projects/ml/tfmodels/cifarnet-model',
                         help='Model checkpoint and event directory.')
 
     # These flags are often, but not always, overwritten by the launcher.
