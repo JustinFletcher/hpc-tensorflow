@@ -101,6 +101,10 @@ if __name__ == '__main__':
                         default='/gpfs/project/ml/tfmodels/models/research/slim/eval_image_classifier.py',
                         help='Slim eval file.')
 
+    parser.add_argument('--train_dir', type=str,
+                        default='/gpfs/project/ml/tfmodels/cifarnet-model',
+                        help='Model checkpoint and event directory.')
+
     # These flags are often, but not always, overwritten by the launcher.
     parser.add_argument('--log_dir', type=str,
                         default='/gpfs/projects/ml/tmp/slim_test',
