@@ -6,7 +6,7 @@ import tensorflow as tf
 
 def tensorflow_experiment():
 
-    import FLAGS.slim_train_file
+    # import FLAGS.slim_train_file
 
     ####################
     # Train a network. #
