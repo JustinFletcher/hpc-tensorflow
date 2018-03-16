@@ -114,6 +114,11 @@ def convert_astro_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True):
         h = int(image.shape[0])
         w = int(image.shape[1])
         c = int(image.shape[2])
+        #check if RGBA format and convert to RGB if true:
+        if c == 4:
+            # print('Image is RGBA. Convert to RGB.')
+            image = image[:,:,:3]
+            c = 3
         image_raw = image.tostring()
 
         annotations = read_annotation_file(annot_path_list[index])
@@ -183,6 +188,11 @@ def convert_astro_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True):
             height = int(image.shape[0])
             width = int(image.shape[1])
             depth = int(image.shape[2])
+            #check if RGBA format and convert to RGB if true:
+            if depth == 4:
+                # print('Image is RGBA. Convert to RGB.')
+                image = image[:,:,:3]
+                depth = 3
 
             annotations = read_annotation_file(annot_path_list[index])
 
