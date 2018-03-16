@@ -129,11 +129,15 @@ def convert_astro_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True):
         xmin_norm = annotations['x_min']
         xmax_norm = annotations['x_max']
 
+        filename = image_path_list[index].split('/')[-1]
+        # print('filename',filename)
+
 
         example = tf.train.Example(features=tf.train.Features(feature={
             'image/height': dataset_util.int64_feature(h),
             'image/width': dataset_util.int64_feature(w),
             'image/depth': dataset_util.int64_feature(c),
+            'image/filename': dataset_util.bytes_feature(filename.encode('utf8')),
             'image/encoded': dataset_util.bytes_feature(image_raw),
             'image/object/bbox/ymin': dataset_util.float_list_feature(ymin_norm),
             'image/object/bbox/ymax': dataset_util.float_list_feature(ymax_norm),
@@ -167,6 +171,9 @@ def convert_astro_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True):
                                 .int64_list
                                 .value[0])
 
+            filename_recon = example.features.feature['image/filename'].bytes_list.value[0].decode('utf-8')
+            # print('filename_recon',filename_recon)
+
             img_string = (example.features.feature['image/encoded']
                                   .bytes_list
                                   .value[0])
@@ -194,6 +201,8 @@ def convert_astro_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True):
                 image = image[:,:,:3]
                 depth = 3
 
+            filename = image_path_list[index].split('/')[-1]
+
             annotations = read_annotation_file(annot_path_list[index])
 
             # Note: annotation data is already normalized:
@@ -218,6 +227,9 @@ def convert_astro_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True):
 
             if not np.allclose(depth,depth_recon):
                 print('image depth is not equal for index:',index, depth, depth_recon)
+
+            if not filename == filename_recon:
+                print('filename is not equal for index:',index, filename, filename_recon, len(filename), len(filename_recon))
 
             # print('xmin,xmin_recon',xmin,xmin_recon)
             if not np.allclose(xmin,xmin_recon):
