@@ -26,19 +26,12 @@ def main(FLAGS):
     exp.set_rep_count(2)
     # Set independent parameters.
     exp.add_design('train_batch_size', [128, 256])
-    exp.add_design('train_enqueue_threads', [32])
-    exp.add_design('learning_rate', [0.0001])
-    exp.add_design('max_steps', [1000])
-    exp.add_design('test_interval', [100])
-    exp.add_design('pause_time', [10])
-    exp.add_design('model_name', ['lenet'])
-
     # Launch the experiment.
     exp.launch_experiment(exp_filename=FLAGS.experiment_py_file,
                           log_dir=FLAGS.log_dir,
-                          account_str='MHPCC96670DA1',
+                          account_str='MHPCC96650DE1',
                           queue_str='standard',
-                          module_str='anaconda2/5.0.1 gcc/5.3.0 cudnn/6.0',
+                          module_str='tensorflow/1.4.0',
                           manager='pbs',
                           shuffle_job_order=True)
 
@@ -80,7 +73,7 @@ if __name__ == '__main__':
                         help='Number of seconds to run before giving up.')
 
     parser.add_argument('--experiment_py_file', type=str,
-                        default='/gpfs/home/fletch/hpc-tensorflow/slim_detection_cluster_experiment/models/research/slim/slim_detection_experiment.py',
+                        default='/gpfs/home/fletch/hpc-tensorflow/slim_detection_cluster_experiment/models/official/resnet/cifar_resnet_experiment.py',
                         help='Number of seconds to run before giving up.')
 
     # Parse known arguements.
