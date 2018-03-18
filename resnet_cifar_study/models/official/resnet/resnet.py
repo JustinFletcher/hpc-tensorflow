@@ -36,8 +36,8 @@ import os
 
 import tensorflow as tf
 
-from official.utils.arg_parsers import parsers  # pylint: disable=g-bad-import-order
-from official.utils.logging import hooks_helper
+from utils.arg_parsers import parsers  # pylint: disable=g-bad-import-order
+from utils.logging import hooks_helper
 
 _BATCH_NORM_DECAY = 0.997
 _BATCH_NORM_EPSILON = 1e-5
