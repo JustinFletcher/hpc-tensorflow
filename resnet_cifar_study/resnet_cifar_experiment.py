@@ -77,8 +77,8 @@ if __name__ == '__main__':
 
     # Establish default arguements.
     parser.add_argument('--train_script', type=str,
-                        default='/gpfs/projects/ml/tfmodels/models/official/',
-                        help='Slim train file.')
+                        default='/gpfs/home/fletch/hpc-tensorflow/slim_detection_cluster_experiment/models/official/resnet/cifar_resnet_experiment.py',
+                        help='Official train file.')
 
     parser.add_argument('--train_dir', type=str,
                         default='/gpfs/projects/ml/tfmodels/cifarnet-model/',
