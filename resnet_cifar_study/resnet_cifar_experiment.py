@@ -2,7 +2,6 @@ import os
 import sys
 import csv
 import argparse
-import importlib
 import tensorflow as tf
 
 
@@ -14,16 +13,42 @@ def tensorflow_experiment():
 
     tf.gfile.MakeDirs(FLAGS.model_dir)
 
-    train_script='/gpfs/home/fletch/hpc-tensorflow/resnet_cifar_study/models/official/resnet/cifar10_main.py'
+    # The path to the training script.
+    # train_script='/gpfs/home/fletch/hpc-tensorflow/resnet_cifar_study/models/official/resnet/cifar10_main.py'
 
+    # These flags are acceptable to the training script provided by TF.
+    script_flags = ['h',
+                    'data_dir',
+                    'model_dir',
+                    'train_epochs',
+                    'epochs_per_eval',
+                    'batch_size',
+                    'multi_gpu',
+                    'hooks',
+                    'num_parallel_calls',
+                    'inter_op_parallelism_threads',
+                    'intra_op_parallelism_threads',
+                    'use_synthetic_data',
+                    'max_train_steps',
+                    'data_format',
+                    'version',
+                    'resnet_size']
+
+    # Initialize an empty sting.
     flags_string = ""
+
+    # Iterate over the input flags... If in 2.7, use vars(FLAGS).iteritems()
     for key, value in vars(FLAGS).items():
-        flags_string += " --%s=%s" % (key, value)
+
+        # If the input flag is acceptable for this script...
+        if key in script_flags:
+
+            # ...append it to the string.
+            flags_string += " --%s=%s" % (key, value)
     print(flags_string)
 
-    print("I want to run: %s" % train_script)
-    os.system("python %s %s" % (train_script, flags_string))
-    print("I tried...")
+    # Run the training script with the constructed flag string.
+    os.system("python %s %s" % (FLAGS.train_script, flags_string))
 
     # Write the data we saved to a csv file, to be compiled by the launcher.
     with open(FLAGS.log_dir + '/' + FLAGS.log_filename, 'wb') as csvfile:
@@ -86,6 +111,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     # Establish default arguements.
+    parser.add_argument('--train_script', type=str,
+                        default='/gpfs/home/fletch/hpc-tensorflow/resnet_cifar_study/models/official/resnet/cifar10_main.py',
+                        help='The core training script that this script wraps.')
+
     parser.add_argument('--model_dir', type=str,
                         default='/gpfs/projects/ml/tfmodels/resnet_cifar_model/',
                         help='Model checkpoint and event directory.')
@@ -94,6 +123,14 @@ if __name__ == '__main__':
     parser.add_argument('--data_dir', type=str,
                         default='/gpfs/projects/ml/data/cifar10_official',
                         help='Directory from which to pull data TFRecords.')
+
+    parser.add_argument('--log_dir', type=str,
+                        default='/gpfs/projects/ml/log/resnet_cifar_study/',
+                        help='Summaries log directory.')
+
+    parser.add_argument('--log_filename', type=str,
+                        default='defualt.csv',
+                        help='Merged output filename.')
 
 
 
