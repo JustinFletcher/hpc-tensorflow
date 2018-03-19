@@ -22,8 +22,7 @@ from __future__ import print_function
 import unittest
 
 import tensorflow as tf
-
-from official.utils.logging import hooks_helper
+import hooks_helper
 
 
 class BaseTest(unittest.TestCase):
