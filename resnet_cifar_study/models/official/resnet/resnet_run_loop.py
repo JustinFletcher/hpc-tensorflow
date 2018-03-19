@@ -28,9 +28,9 @@ import os
 
 import tensorflow as tf
 
-from official.utils.arg_parsers import parsers  # pylint: disable=g-bad-import-order
-from official.utils.logging import hooks_helper
-from official.resnet import resnet_model
+from utils.arg_parsers import parsers  # pylint: disable=g-bad-import-order
+from utils.logging import hooks_helper
+import resnet_model
 
 
 ################################################################################

@@ -22,7 +22,7 @@ import numpy as np
 import tensorflow as tf
 
 
-from official.resnet import resnet_model  # pylint: disable=g-bad-import-order
+import resnet_model  # pylint: disable=g-bad-import-order
 
 
 class BlockTest(tf.test.TestCase):

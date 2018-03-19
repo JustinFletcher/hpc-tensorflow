@@ -23,8 +23,8 @@ import sys
 
 import tensorflow as tf
 
-from official.resnet import resnet_model
-from official.resnet import resnet_run_loop
+import resnet_model
+import resnet_run_loop
 
 _HEIGHT = 32
 _WIDTH = 32
