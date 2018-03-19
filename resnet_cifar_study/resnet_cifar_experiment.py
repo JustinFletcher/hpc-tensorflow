@@ -13,7 +13,8 @@ def tensorflow_experiment():
     tf.gfile.MakeDirs(FLAGS.log_dir)
 
     # Run experiment.
-    FLAGS.train_script
+    # FLAGS.train_script
+    print("I want to run %s" % FLAGS.train_script)
 
     # Write the data we saved to a csv file, to be compiled by the launcher.
     with open(FLAGS.log_dir + '/' + FLAGS.log_filename, 'wb') as csvfile:
@@ -77,16 +78,16 @@ if __name__ == '__main__':
 
     # Establish default arguements.
     parser.add_argument('--train_script', type=str,
-                        default='/gpfs/home/fletch/hpc-tensorflow/slim_detection_cluster_experiment/models/official/resnet/cifar_resnet_experiment.py',
+                        default='/gpfs/home/fletch/hpc-tensorflow/resnet_cifar_study/models/official/resnet/cifar10_main.py',
                         help='Official train file.')
 
     parser.add_argument('--train_dir', type=str,
-                        default='/gpfs/projects/ml/tfmodels/cifarnet-model/',
+                        default='/gpfs/projects/ml/tfmodels/resnet_cifar_model/',
                         help='Model checkpoint and event directory.')
 
     # These flags are often, but not always, overwritten by the launcher.
     parser.add_argument('--log_dir', type=str,
-                        default='/gpfs/projects/ml/tmp/slim_test/',
+                        default='/gpfs/projects/ml/log/tmp/resnet_cifar_study/',
                         help='Summaries log directory.')
 
     parser.add_argument('--pause_time', type=float,
@@ -120,7 +121,7 @@ if __name__ == '__main__':
 
     # These flags specify the data used in the experiment.
     parser.add_argument('--data_dir', type=str,
-                        default='/gpfs/projects/ml/data/cifar10',
+                        default='/gpfs/projects/ml/data/cifar10_official',
                         help='Directory from which to pull data TFRecords.')
 
     parser.add_argument('--train_file', type=str,
