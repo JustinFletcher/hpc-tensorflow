@@ -16,7 +16,7 @@ def tensorflow_experiment():
 
     # Run experiment.
     # FLAGS.train_script
-    print("Printing FLAGS")
+    print("Printing FLAGS here:")
     print(FLAGS)
 
     print("I want to run %s" % FLAGS.train_script)
