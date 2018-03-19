@@ -25,7 +25,7 @@ def tensorflow_experiment():
         flags_string += " --%s=%s" % (key, value)
     print(flags_string)
 
-    print("I want to run %s" % FLAGS.train_script)
+    print("I want to run: %s" % FLAGS.train_script)
     os.system("python %s %s" % FLAGS.train_script, flags_string)
     print("I tried...")
 
