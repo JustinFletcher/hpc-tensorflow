@@ -17,10 +17,16 @@ def tensorflow_experiment():
     # Run experiment.
     # FLAGS.train_script
     print("Printing FLAGS here:")
-    print(FLAGS)
+    # print(parser.parse_args())
+    # print(vars(FLAGS))
+
+    flags_string = ""
+    for key, value in vars(FLAGS).items():
+        flags_string += " --%s=%s" % (key, value)
+    print(flags_string)
 
     print("I want to run %s" % FLAGS.train_script)
-    os.system("python %s" % FLAGS.train_script)
+    os.system("python %s %s" % FLAGS.train_script, flags_string)
     print("I tried...")
 
     # Write the data we saved to a csv file, to be compiled by the launcher.
