@@ -1,6 +1,8 @@
+import os
 import sys
 import csv
 import argparse
+import importlib
 import tensorflow as tf
 
 
@@ -14,7 +16,12 @@ def tensorflow_experiment():
 
     # Run experiment.
     # FLAGS.train_script
+    print("Printing FLAGS")
+    print(FLAGS)
+
     print("I want to run %s" % FLAGS.train_script)
+    os.system("%s" % FLAGS.train_script)
+    print("I tried...")
 
     # Write the data we saved to a csv file, to be compiled by the launcher.
     with open(FLAGS.log_dir + '/' + FLAGS.log_filename, 'wb') as csvfile:

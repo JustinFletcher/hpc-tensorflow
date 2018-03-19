@@ -187,7 +187,7 @@ class ClusterExperiment(object):
                 #PBS -l select=%s
                 #PBS -o ~/log/output/%s.out
                 #PBS -e ~/log/error/%s.err
-                #PBS -A MHPCC96670DA1
+                #PBS -A MHPCC96650DE1
                 #PBS -q standard
                 module load anaconda2/5.0.1 gcc/5.3.0 cudnn/6.0
                 cd $PBS_O_WORKDIR

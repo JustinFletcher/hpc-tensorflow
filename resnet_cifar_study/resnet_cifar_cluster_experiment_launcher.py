@@ -61,11 +61,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--log_dir', type=str,
-                        default='../log/cluster_experiment/',
+                        default='/gpfs/projects/ml/log/resnet_cifar_study/',
                         help='Summaries log directory.')
 
     parser.add_argument('--log_filename', type=str,
-                        default='cluster_experiment.csv',
+                        default='resnet_cifar_study.csv',
                         help='Merged output filename.')
 
     parser.add_argument('--max_runtime', type=int,
@@ -73,7 +73,7 @@ if __name__ == '__main__':
                         help='Number of seconds to run before giving up.')
 
     parser.add_argument('--experiment_py_file', type=str,
-                        default='/gpfs/home/fletch/hpc-tensorflow/slim_detection_cluster_experiment/models/official/resnet/cifar_resnet_experiment.py',
+                        default='/gpfs/home/fletch/hpc-tensorflow/resnet_cifar_study/resnet_cifar_experiment.py',
                         help='Number of seconds to run before giving up.')
 
     # Parse known arguements.
