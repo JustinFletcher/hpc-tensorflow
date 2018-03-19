@@ -22,7 +22,7 @@ def tensorflow_experiment():
     print(flags_string)
 
     print("I want to run: %s" % train_script)
-    os.system("python %s %s" % (FLAGS.train_script, flags_string))
+    os.system("python %s %s" % (train_script, flags_string))
     print("I tried...")
 
     # Write the data we saved to a csv file, to be compiled by the launcher.
