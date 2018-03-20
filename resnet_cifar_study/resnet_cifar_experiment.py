@@ -7,6 +7,7 @@ import tensorflow as tf
 
 def tensorflow_experiment():
 
+    # Clear existing directory.
     if tf.gfile.Exists(FLAGS.model_dir):
 
         tf.gfile.DeleteRecursively(FLAGS.model_dir)
@@ -45,37 +46,52 @@ def tensorflow_experiment():
 
             # ...append it to the string.
             flags_string += " --%s=%s" % (key, value)
-    print(flags_string)
 
-    # Run the training script with the constructed flag string.
+    # Run the training script with the constructed flag string, blocking.
     os.system("python %s %s" % (FLAGS.train_script, flags_string))
 
-    # Write the data we saved to a csv file, to be compiled by the launcher.
-    with open(FLAGS.log_dir + '/' + FLAGS.log_filename, 'wb') as csvfile:
+    # Get a list of events filenames in the model_dir.
+    events_file_list = glob.glob(FLAGS.model_dir + 'events.out.tfevents.*')
 
-        # Open a writer and write the header.
-        csvwriter = csv.writer(csvfile)
+    print("Event file list")
+    print(events_file_list)
 
-        row = []
+    # Iterate over the event files in the model_dir.
+    for ef in events_file_list:
 
-        # TODO: Specify path to specific events file.
-        for e in tf.train.summary_iterator(FLAGS.train_dir + 'events.out.tfevents.1521127912.hokulea02.mhpcc.hpc.mil'):
+        print("ef")
+        print(ef)
 
-            print(e)
+        # Write the data we saved to a csv file, to be compiled by the launcher.
+        with open(FLAGS.log_dir + FLAGS.log_filename, 'wb') as csvfile:
 
-            for v in e.summary.value:
+            # Open a writer and write the header.
+            csvwriter = csv.writer(csvfile)
 
-                # TODO: Add Step.
+            # Initialize an empty list to store summaries.
+            row = []
 
-                print(v)
+            # TODO: Specify path to specific events file.
+            # TODO: Extract all events files in the model_dir.
+            # TODO: Find the latest event file.
+            # TODO: Iterate over the summaries in that file.
+            for e in tf.train.summary_iterator(ef):
 
-                if v.tag == 'loss':
-                    print(v.simple_value)
-                    row.append(v.simple_value)
+                print(e)
 
-                # TODO: Add running time.
+                for v in e.summary.value:
 
-            csvwriter.writerow(row)
+                    # TODO: Add Step.
+
+                    print(v)
+
+                    if v.tag == 'loss':
+                        print(v.simple_value)
+                        row.append(v.simple_value)
+
+                    # TODO: Add running time.
+
+                csvwriter.writerow(row)
 
         # # Iterate over the results vectors for each config.
         # for (step, tl, te, vl, ve, mrt, qs, mer, mdr) in zip(steps,
