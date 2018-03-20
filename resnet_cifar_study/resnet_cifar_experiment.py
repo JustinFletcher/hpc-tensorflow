@@ -64,7 +64,7 @@ def tensorflow_experiment():
         print(ef)
 
         # Write the data we saved to a csv file.
-        with open(FLAGS.model_dir + FLAGS.log_filename, 'wb') as csvfile:
+        with open(FLAGS.model_dir + FLAGS.log_filename, 'w') as csvfile:
 
             # Open a writer and write the header.
             csvwriter = csv.writer(csvfile)
