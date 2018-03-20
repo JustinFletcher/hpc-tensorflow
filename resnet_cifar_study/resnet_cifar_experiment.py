@@ -63,7 +63,7 @@ def tensorflow_experiment():
         print("ef")
         print(ef)
 
-        # Write the data we saved to a csv file, to be compiled by the launcher.
+        # Write the data we saved to a csv file.
         with open(FLAGS.log_dir + FLAGS.log_filename, 'wb') as csvfile:
 
             # Open a writer and write the header.
@@ -79,7 +79,6 @@ def tensorflow_experiment():
             for e in tf.train.summary_iterator(ef):
 
                 print(e)
-git 
                 for v in e.summary.value:
 
                     # TODO: Add Step.
