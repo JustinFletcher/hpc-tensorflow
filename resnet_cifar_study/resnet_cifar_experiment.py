@@ -1,6 +1,7 @@
 import os
 import sys
 import csv
+import glob
 import argparse
 import tensorflow as tf
 
@@ -78,7 +79,7 @@ def tensorflow_experiment():
             for e in tf.train.summary_iterator(ef):
 
                 print(e)
-
+git 
                 for v in e.summary.value:
 
                     # TODO: Add Step.
@@ -134,6 +135,15 @@ if __name__ == '__main__':
     parser.add_argument('--model_dir', type=str,
                         default='/gpfs/projects/ml/tfmodels/resnet_cifar_model/',
                         help='Model checkpoint and event directory.')
+
+    # These flags specify the data used in the experiment.
+    parser.add_argument('--train_epochs', type=int,
+                        default=6,
+                        help='Directory from which to pull data TFRecords.')
+
+    parser.add_argument('--epochs_per_eval', type=int,
+                        default=2,
+                        help='Directory from which to pull data TFRecords.')
 
     # These flags specify the data used in the experiment.
     parser.add_argument('--data_dir', type=str,
