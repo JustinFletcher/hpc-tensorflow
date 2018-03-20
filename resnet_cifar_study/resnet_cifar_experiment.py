@@ -64,7 +64,7 @@ def tensorflow_experiment():
         print(ef)
 
         # Write the data we saved to a csv file.
-        with open(FLAGS.log_dir + FLAGS.log_filename, 'wb') as csvfile:
+        with open(FLAGS.model_dir + FLAGS.log_filename, 'wb') as csvfile:
 
             # Open a writer and write the header.
             csvwriter = csv.writer(csvfile)
@@ -150,7 +150,7 @@ if __name__ == '__main__':
                         help='Directory from which to pull data TFRecords.')
 
     parser.add_argument('--log_dir', type=str,
-                        default='/gpfs/projects/ml/log/resnet_cifar_study/',
+                        default='/gpfs/projects/ml/tfmodels/resnet_cifar_model/',
                         help='Summaries log directory.')
 
     parser.add_argument('--log_filename', type=str,
