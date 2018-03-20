@@ -63,7 +63,7 @@ def tensorflow_experiment():
         # Iterate over the event files in the model_dir.
         for ef in events_file_list:
 
-            print("ef")
+            print("--New event file")
             print(ef)
 
             # Open a writer and write the header.
@@ -78,12 +78,16 @@ def tensorflow_experiment():
             # TODO: Iterate over the summaries in that file.
             for e in tf.train.summary_iterator(ef):
 
+                print("---New event iterator yield")
+
                 # print(e)
                 for v in e.summary.value:
 
+                    print("----New summary value")
+
                     # TODO: Add Step.
 
-                    # print(v)
+                    print(v.tag)
 
                     if v.tag == 'step':
                         print(v.simple_value)
@@ -99,7 +103,7 @@ def tensorflow_experiment():
 
                     # TODO: Add running time.
 
-                csvwriter.writerow(row)
+                    csvwriter.writerow(row)
 
         # # Iterate over the results vectors for each config.
         # for (step, tl, te, vl, ve, mrt, qs, mer, mdr) in zip(steps,
