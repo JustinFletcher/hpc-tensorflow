@@ -57,14 +57,14 @@ def tensorflow_experiment():
     print("Event file list")
     print(events_file_list)
 
-    # Iterate over the event files in the model_dir.
-    for ef in events_file_list:
+    # Write the data we saved to a csv file.
+    with open(FLAGS.model_dir + FLAGS.log_filename, 'w') as csvfile:
 
-        print("ef")
-        print(ef)
+        # Iterate over the event files in the model_dir.
+        for ef in events_file_list:
 
-        # Write the data we saved to a csv file.
-        with open(FLAGS.model_dir + FLAGS.log_filename, 'w') as csvfile:
+            print("ef")
+            print(ef)
 
             # Open a writer and write the header.
             csvwriter = csv.writer(csvfile)
@@ -78,12 +78,20 @@ def tensorflow_experiment():
             # TODO: Iterate over the summaries in that file.
             for e in tf.train.summary_iterator(ef):
 
-                print(e)
+                # print(e)
                 for v in e.summary.value:
 
                     # TODO: Add Step.
 
-                    print(v)
+                    # print(v)
+
+                    if v.tag == 'step':
+                        print(v.simple_value)
+                        row.append(v.simple_value)
+
+                    if v.tag == 'global_step/sec':
+                        print(v.simple_value)
+                        row.append(v.simple_value)
 
                     if v.tag == 'loss':
                         print(v.simple_value)
