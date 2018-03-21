@@ -152,10 +152,6 @@ if __name__ == '__main__':
                         default='/gpfs/projects/ml/data/cifar10_official',
                         help='Directory from which to pull data TFRecords.')
 
-    parser.add_argument('--log_dir', type=str,
-                        default='/gpfs/projects/ml/tfmodels/resnet_cifar_model/',
-                        help='Summaries log directory.')
-
     parser.add_argument('--log_filename', type=str,
                         default='defualt.csv',
                         help='Merged output filename.')

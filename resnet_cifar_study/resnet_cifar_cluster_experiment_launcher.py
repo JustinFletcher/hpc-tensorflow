@@ -25,7 +25,7 @@ def main(FLAGS):
     # Set the number of reps for each config.
     exp.set_rep_count(2)
     # Set independent parameters.
-    exp.add_design('train_batch_size', [128, 256])
+    exp.add_design('batch_size', [128, 256])
     # Launch the experiment.
     exp.launch_experiment(exp_filename=FLAGS.experiment_py_file,
                           log_dir=FLAGS.log_dir,
@@ -37,17 +37,11 @@ def main(FLAGS):
 
     # Manually note response varaibles.
     response_labels = ['step_num',
-                       'train_loss',
-                       'train_error',
-                       'val_loss',
-                       'val_error',
-                       'mean_running_time',
-                       'queue_size',
-                       'mean_enqueue_rate',
-                       'mean_dequeue_rate']
+                       'global_step_per_sec',
+                       'loss']
 
     # Wait for the output to return.
-    exp.join_job_output(FLAGS.log_dir,
+    exp.join_job_output(FLAGS.model_dir,
                         FLAGS.log_filename,
                         FLAGS.max_runtime,
                         response_labels)
@@ -60,7 +54,7 @@ if __name__ == '__main__':
     # Instantiate an arg parser.
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--log_dir', type=str,
+    parser.add_argument('--model_dir', type=str,
                         default='/gpfs/projects/ml/log/resnet_cifar_study/',
                         help='Summaries log directory.')
 
