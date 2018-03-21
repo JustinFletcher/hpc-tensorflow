@@ -79,9 +79,10 @@ def tensorflow_experiment():
             for e in tf.train.summary_iterator(ef):
 
                 print("---New event iterator yield")
-                print(e.summary.value)
 
-                # print(e)
+                # print(e.summary.value)
+                print("e")
+                print(e)
                 for v in e.summary.value:
 
                     print("----New summary value")
