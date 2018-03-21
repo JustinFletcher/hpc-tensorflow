@@ -60,17 +60,16 @@ def tensorflow_experiment():
     # Write the data we saved to a csv file.
     with open(FLAGS.model_dir + FLAGS.log_filename, 'w') as csvfile:
 
+        # Open a writer and write the header.
+        csvwriter = csv.writer(csvfile)
+
+
         # Iterate over the event files in the model_dir.
         for ef in events_file_list:
 
             print("--New event file")
             print(ef)
 
-            # Open a writer and write the header.
-            csvwriter = csv.writer(csvfile)
-
-            # Initialize an empty list to store summaries.
-            row = []
 
             # TODO: Specify path to specific events file.
             # TODO: Extract all events files in the model_dir.
@@ -78,11 +77,17 @@ def tensorflow_experiment():
             # TODO: Iterate over the summaries in that file.
             for e in tf.train.summary_iterator(ef):
 
+                # Initialize an empty list to store summaries.
+                row = []
+
                 print("---New event iterator yield")
 
                 # print(e.summary.value)
-                print("e")
-                print(e)
+                print("e.step")
+                print(e.step)
+
+                row.append(e.step)
+
                 for v in e.summary.value:
 
                     print("----New summary value")
@@ -105,7 +110,7 @@ def tensorflow_experiment():
 
                     # TODO: Add running time.
 
-                    csvwriter.writerow(row)
+                csvwriter.writerow(row)
 
         # # Iterate over the results vectors for each config.
         # for (step, tl, te, vl, ve, mrt, qs, mer, mdr) in zip(steps,
