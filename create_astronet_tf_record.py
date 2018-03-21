@@ -14,12 +14,10 @@
 # ==============================================================================
 
 
-"""Converts astro image and annotation data to TFRecords file format with Example protos.
+"""Converts astronet image and annotation data to TFRecords file format with Example protos.
 
 Example usage:
-    python object_detection/dataset_tools/create_kitti_tf_record.py \
-        --data_dir=/home/user/kitti \
-        --output_path=/home/user/kitti.record
+    python3 create_astronet_tf_record.py
 """
 
 from __future__ import absolute_import
@@ -40,9 +38,6 @@ import tensorflow as tf
 sys.path.append("../../") # Adds higher directory to python modules path.
 
 from object_detection.utils import dataset_util
-# from object_detection.utils import label_map_util
-# from object_detection.utils.np_box_ops import iou
-
 
 FLAGS = None
 
@@ -51,7 +46,7 @@ CLASS_TEXT = ['None','Satellite']
 def read_annotation_file(filename):
     """Reads an annotation file.
 
-    Converts an astro annotation file into a dictionary containing all the
+    Converts an astronet annotation file into a dictionary containing all the
     relevant information.
 
     Args:
@@ -86,10 +81,10 @@ def read_annotation_file(filename):
 
     return anno
 
-def convert_astro_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True):
-    """Converts a dataset to tfrecords."""
+def convert_astronet_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True):
+    """Converts an astronet dataset to tfrecords."""
 
-    # generate the image_path_list and the annot_path_list:
+    # generate the image_path_list:
     with open(path_to_txt) as fptr:
         image_str = fptr.read()
 
@@ -186,7 +181,6 @@ def convert_astro_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True):
             xmin_recon = np.array(example.features.feature['image/object/bbox/xmin'].float_list.value)
             xmax_recon = np.array(example.features.feature['image/object/bbox/xmax'].float_list.value)
 
-            # class_text_recon = np.array(example.features.feature['image/object/class/text'].bytes_list.value)
             class_label_recon = np.array(example.features.feature['image/object/class/label'].int64_list.value)
 
             # get origiinal image, annot:
@@ -213,7 +207,6 @@ def convert_astro_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True):
             xmax = np.array(annotations['x_max'])
 
             class_label = np.array(annotations['class_id'])
-            # class_text = [CLASS_TEXT[x] for x in annotations['class_id']]
 
             #check if equal
             if not np.allclose(image,image_recon):
@@ -247,9 +240,6 @@ def convert_astro_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True):
             if not np.allclose(class_label,class_label_recon):
                 print('image bbox class_label is not equal for index:',index, class_label, class_label_recon)
 
-            # if not np.allclose(class_text,class_text_recon):
-            #     print('image bbox class_text is not equal for index:',index, class_text, class_text_recon)
-
             index += 1
             # break  # debug
 
@@ -258,9 +248,7 @@ def convert_astro_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True):
 
 def main(unused_argv):
 
-    path_to_data = FLAGS.directory
-    # sourceDir = os.path.abspath(path_to_data)
-    sourceDir = path_to_data
+    sourceDir = os.path.expanduser(FLAGS.directory)
 
     path_to_train_txt = os.path.join(sourceDir, 'train.txt')
     path_to_test_txt = os.path.join(sourceDir, 'test.txt')
@@ -271,17 +259,17 @@ def main(unused_argv):
     path_to_valid_tfrecords = os.path.join(sourceDir, 'valid.tfrecords')
 
     print('Generating train.tfrecords...')
-    convert_astro_to_tfrecords(
+    convert_astronet_to_tfrecords(
         path_to_txt = path_to_train_txt, 
         path_to_tfrecords = path_to_train_tfrecords)
 
     print('Generating test.tfrecords...')
-    convert_astro_to_tfrecords(
+    convert_astronet_to_tfrecords(
         path_to_txt = path_to_test_txt, 
         path_to_tfrecords = path_to_test_tfrecords)
 
     print('Generating valid.tfrecords...')
-    convert_astro_to_tfrecords(
+    convert_astronet_to_tfrecords(
         path_to_txt = path_to_valid_txt, 
         path_to_tfrecords = path_to_valid_tfrecords)
 
@@ -291,7 +279,10 @@ def main(unused_argv):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--directory',type=str, default='/Users/gmartin/tensorflow/false_positives/data', help='Directory (train,test,valid).txt files and where to store corresponding *.tfrecords')
+    parser.add_argument('--directory',
+                        type=str, 
+                        default='~/tensorflow/false_positives/data', 
+                        help='Directory (train,test,valid).txt files and where to store corresponding *.tfrecords')
     FLAGS, unparsed = parser.parse_known_args()
 
     tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
