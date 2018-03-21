@@ -90,7 +90,9 @@ def tensorflow_experiment():
                 if step > current_step:
 
                     # ...if so, write out the prior row...
-                    csvwriter.writerow(row)
+                    if len(row) < len(summaries_to_store) + 1:
+
+                        csvwriter.writerow(row)
 
                     # ...then clear the row storage...
                     row = []
@@ -106,18 +108,10 @@ def tensorflow_experiment():
                     print(v.tag)
 
                     # Check if present summary is in the summary list.
-
                     if v.tag in summaries_to_store:
 
+                        # If so, append them.
                         row.append(v.simple_value)
-
-                    # if v.tag == 'global_step/sec':
-                    #     # print(v.simple_value)
-                    #     row.append(v.simple_value)
-
-                    # if v.tag == 'loss':
-                    #     # print(v.simple_value)
-                    #     row.append(v.simple_value)
 
                     print("=======End v from e.summary.value========")
                     # TODO: Add running time.
@@ -138,7 +132,7 @@ if __name__ == '__main__':
     # Establish default arguements.
     parser.add_argument('--train_script', type=str,
                         default='/gpfs/home/fletch/hpc-tensorflow/resnet_cifar_study/models/official/resnet/cifar10_main.py',
-                        help='The core training script that this script wraps.')
+                        help='The core training script.')
 
     parser.add_argument('--model_dir', type=str,
                         default='/gpfs/projects/ml/tfmodels/resnet_cifar_model/',
