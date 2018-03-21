@@ -36,6 +36,10 @@ def tensorflow_experiment():
                     'version',
                     'resnet_size']
 
+    # These are the summary tags to store.
+    summaries_to_store = ['global_step/sec',
+                          'loss']
+
     # Initialize an empty sting.
     flags_string = ""
 
@@ -63,7 +67,7 @@ def tensorflow_experiment():
         # Open a writer and write the header.
         csvwriter = csv.writer(csvfile)
 
-        # 
+        # Initialize placeholders.
         row = []
         current_step = -1
 
@@ -73,66 +77,52 @@ def tensorflow_experiment():
             print("--New event file")
             print(ef)
 
-            # TODO: Specify path to specific events file.
-            # TODO: Extract all events files in the model_dir.
-            # TODO: Find the latest event file.
-            # TODO: Iterate over the summaries in that file.
+            # Iterate over each summary file in the model dir.
             for e in tf.train.summary_iterator(ef):
 
                 print("====Start e from tf.train.summary_iterator(ef)========")
                 print(e.step)
-                # row.append(e.step)
+
+                # Parse the step.
                 step = e.step
 
+                # Check if this iterator has yielded a new step...
                 if step > current_step:
 
-                    # Initialize an empty list to store summaries.
+                    # ...if so, write out the prior row...
                     csvwriter.writerow(row)
+
+                    # ...then clear the row storage...
                     row = []
+
+                    # ...and append and update the step.
                     row.append(step)
                     current_step = step
 
+                # Iterate over each summary value.
                 for v in e.summary.value:
-
-                    # TODO: Add Step.
 
                     print("=======Start v from e.summary.value========")
                     print(v.tag)
 
-                    if v.tag == 'global_step/sec':
-                        # print(v.simple_value)
+                    # Check if present summary is in the summary list.
+
+                    if v.tag in summaries_to_store:
+
                         row.append(v.simple_value)
 
-                    if v.tag == 'loss':
-                        # print(v.simple_value)
-                        row.append(v.simple_value)
+                    # if v.tag == 'global_step/sec':
+                    #     # print(v.simple_value)
+                    #     row.append(v.simple_value)
+
+                    # if v.tag == 'loss':
+                    #     # print(v.simple_value)
+                    #     row.append(v.simple_value)
 
                     print("=======End v from e.summary.value========")
                     # TODO: Add running time.
 
                 print("====End e from tf.train.summary_iterator(ef)========")
-
-        # # Iterate over the results vectors for each config.
-        # for (step, tl, te, vl, ve, mrt, qs, mer, mdr) in zip(steps,
-        #                                                      train_losses,
-        #                                                      train_errors,
-        #                                                      val_losses,
-        #                                                      val_errors,
-        #                                                      mean_running_times,
-        #                                                      queue_sizes,
-        #                                                      mean_enqueue_rates,
-        #                                                      mean_dequeue_rates):
-
-        #     # Write the data to a csv.
-        #     csvwriter.writerow([step,
-        #                         tl,
-        #                         te,
-        #                         vl,
-        #                         ve,
-        #                         mrt,
-        #                         qs,
-        #                         mer,
-        #                         mdr])
 
 
 def main(_):
