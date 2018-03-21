@@ -63,8 +63,10 @@ def tensorflow_experiment():
         # Open a writer and write the header.
         csvwriter = csv.writer(csvfile)
 
+        # 
         row = []
         current_step = -1
+
         # Iterate over the event files in the model_dir.
         for ef in events_file_list:
 
