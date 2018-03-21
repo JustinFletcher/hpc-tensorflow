@@ -90,6 +90,7 @@ def tensorflow_experiment():
                     csvwriter.writerow(row)
                     row = []
                     row.append(step)
+                    current_step = step
 
                 for v in e.summary.value:
 
