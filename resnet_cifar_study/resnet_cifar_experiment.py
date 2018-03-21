@@ -90,7 +90,7 @@ def tensorflow_experiment():
                 if step > current_step:
 
                     # ...if so, write out the prior row...
-                    if len(row) < len(summaries_to_store) + 1:
+                    if len(row) == len(summaries_to_store) + 1:
 
                         csvwriter.writerow(row)
 
