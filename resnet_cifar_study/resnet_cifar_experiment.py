@@ -63,13 +63,13 @@ def tensorflow_experiment():
         # Open a writer and write the header.
         csvwriter = csv.writer(csvfile)
 
-
+        row = []
+        current_step = -1
         # Iterate over the event files in the model_dir.
         for ef in events_file_list:
 
             print("--New event file")
             print(ef)
-
 
             # TODO: Specify path to specific events file.
             # TODO: Extract all events files in the model_dir.
@@ -77,24 +77,24 @@ def tensorflow_experiment():
             # TODO: Iterate over the summaries in that file.
             for e in tf.train.summary_iterator(ef):
 
-                # Initialize an empty list to store summaries.
-                row = []
-
                 print("====Start e from tf.train.summary_iterator(ef)========")
                 print(e.step)
-                row.append(e.step)
+                # row.append(e.step)
+                step = e.step
+
+                if step > current_step:
+
+                    # Initialize an empty list to store summaries.
+                    csvwriter.writerow(row)
+                    row = []
+                    row.append(step)
 
                 for v in e.summary.value:
-
 
                     # TODO: Add Step.
 
                     print("=======Start v from e.summary.value========")
                     print(v.tag)
-
-                    if v.tag == 'step':
-                        # print(v.simple_value)
-                        row.append(v.simple_value)
 
                     if v.tag == 'global_step/sec':
                         # print(v.simple_value)
@@ -104,11 +104,8 @@ def tensorflow_experiment():
                         # print(v.simple_value)
                         row.append(v.simple_value)
 
-
                     print("=======End v from e.summary.value========")
                     # TODO: Add running time.
-
-                csvwriter.writerow(row)
 
                 print("====End e from tf.train.summary_iterator(ef)========")
 
