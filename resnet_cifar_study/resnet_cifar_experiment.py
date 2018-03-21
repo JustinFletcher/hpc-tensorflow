@@ -80,37 +80,37 @@ def tensorflow_experiment():
                 # Initialize an empty list to store summaries.
                 row = []
 
-                print("---New event iterator yield")
-
-                # print(e.summary.value)
-                print("e.step")
+                print("====Start e from tf.train.summary_iterator(ef)========")
                 print(e.step)
-
                 row.append(e.step)
 
                 for v in e.summary.value:
 
-                    print("----New summary value")
 
                     # TODO: Add Step.
 
+                    print("=======Start v from e.summary.value========")
                     print(v.tag)
 
                     if v.tag == 'step':
-                        print(v.simple_value)
+                        # print(v.simple_value)
                         row.append(v.simple_value)
 
                     if v.tag == 'global_step/sec':
-                        print(v.simple_value)
+                        # print(v.simple_value)
                         row.append(v.simple_value)
 
                     if v.tag == 'loss':
-                        print(v.simple_value)
+                        # print(v.simple_value)
                         row.append(v.simple_value)
 
+
+                    print("=======End v from e.summary.value========")
                     # TODO: Add running time.
 
                 csvwriter.writerow(row)
+
+                print("====End e from tf.train.summary_iterator(ef)========")
 
         # # Iterate over the results vectors for each config.
         # for (step, tl, te, vl, ve, mrt, qs, mer, mdr) in zip(steps,
