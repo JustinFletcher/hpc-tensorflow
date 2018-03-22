@@ -35,7 +35,7 @@ def main(FLAGS):
                           log_dir=FLAGS.log_dir,
                           account_str='MHPCC96650DE1',
                           queue_str='standard',
-                          module_str='module load anaconda3/5.0.1 tensorflow',
+                          module_str='anaconda3/5.0.1 tensorflow',
                           manager='pbs',
                           shuffle_job_order=True)
 
