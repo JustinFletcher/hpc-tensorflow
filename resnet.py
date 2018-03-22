@@ -52,6 +52,8 @@ from __future__ import print_function
 
 import tensorflow as tf
 
+import resnet_utils
+
 import functools
 
 import tensorflowmodelzoo as zoo
@@ -101,10 +103,6 @@ def define_scope(function, scope=None, *args, **kwargs):
     return decorator
 
 ###########
-
-
-from nets import resnet_utils
-
 slim = tf.contrib.slim
 resnet_arg_scope = resnet_utils.resnet_arg_scope
 
