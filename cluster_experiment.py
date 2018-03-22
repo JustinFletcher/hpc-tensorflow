@@ -249,26 +249,18 @@ class ClusterExperiment(object):
 
                 # TODO: Handle job completion gracefully.
 
-                print("---")
-                print("Job id")
-                print(job_id)
-                print("---")
-
-                print("str(job_id) =")
-                print(str(job_id)[2:-3])
-                print("---")
-
-                job_id_str = str(job_id)[2:-3]
-
                 # Issue qstat command to get job status.
-                p = subprocess.Popen('qstat -r ' + job_id_str,
+                p = subprocess.Popen('qstat -r ' + job_id,
                                      stdin=subprocess.PIPE,
                                      stdout=subprocess.PIPE,
                                      shell=True)
 
+                # Get the subprocess output from qstat.
                 output = p.communicate()
 
+                # Compute the job completion flag.
                 try:
+
                     # Read the qstat out, parse the state, and conv to Boolean.
                     job_complete = output[0].split()[-2] == 'E'
 
@@ -277,14 +269,20 @@ class ClusterExperiment(object):
                     job_complete = True
 
                 # Print a diagnostic.
-                print('Job ' + job_id_str + ' complete? ' +
-                      str(job_complete) + '.')
+                print('Job ' +
+                      job_id +
+                      ' complete? ' +
+                      str(job_complete) +
+                      '.')
 
+                # Append the completion flag.
                 job_complete_flags.append(job_complete)
 
+                # If the job is complete...
                 if job_complete:
 
-                    p = subprocess.Popen('qdel -Wforce ' + job_id_str,
+                    # ...clear it form the queue.
+                    p = subprocess.Popen('qdel -Wforce ' + job_id,
                                          stdin=subprocess.PIPE,
                                          stdout=subprocess.PIPE,
                                          shell=True)
@@ -295,13 +293,10 @@ class ClusterExperiment(object):
             # Check if we've reached timeout.
             timeout = (elapsed_time > max_runtime)
 
-            # # Accomodate Python 3+
-            # with open(FLAGS.log_dir '/' + FLAGS.log_filename, 'w') as csvfile:
-
-            # Accomodate Python 2.7 on Hokulea.
+            # Open a csv for writeout.
             with open(log_dir + '/' + log_filename, 'w') as csvfile:
 
-                # Join lists.
+                # Join the parameter labels and respons labels, making a header.
                 headers = self.get_parameter_labels() + response_labels
 
                 # Open a writer and write the header.
