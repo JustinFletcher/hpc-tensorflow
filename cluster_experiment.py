@@ -181,22 +181,22 @@ class ClusterExperiment(object):
                 job_string += command
 
                 # Remove below.
-                job_string = """#!/bin/bash
-                #PBS -N %s
-                #PBS -l walltime=%s
-                #PBS -l select=%s
-                #PBS -o ~/log/output/%s.out
-                #PBS -e ~/log/error/%s.err
-                #PBS -A MHPCC96650DE1
-                #PBS -q standard
-                module load anaconda2/5.0.1 gcc/5.3.0 cudnn/6.0
-                cd $PBS_O_WORKDIR
-                %s""" % (job_name,
-                         walltime,
-                         select,
-                         job_name,
-                         job_name,
-                         command)
+                # job_string = """#!/bin/bash
+                # #PBS -N %s
+                # #PBS -l walltime=%s
+                # #PBS -l select=%s
+                # #PBS -o ~/log/output/%s.out
+                # #PBS -e ~/log/error/%s.err
+                # #PBS -A MHPCC96650DE1
+                # #PBS -q standard
+                # module load anaconda2/5.0.1 gcc/5.3.0 cudnn/6.0
+                # cd $PBS_O_WORKDIR
+                # %s""" % (job_name,
+                #          walltime,
+                #          select,
+                #          job_name,
+                #          job_name,
+                #          command)
 
                 # Print your job string.
                 print(job_string)
