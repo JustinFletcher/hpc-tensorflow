@@ -202,8 +202,14 @@ class ClusterExperiment(object):
                 print(job_string)
                 job_string = bytes(job_string, 'utf-8')
 
-                # Send job_string to qsub.
-                self._job_ids.append(p.communicate(job_string)[0])
+                # Send job_string to qsub, returning a job ID in bytes.
+                job_id = p.communicate(job_string)[0]
+
+                # Parse the bytes to an ID string.
+                job_id = str(job_id)[2:-3]
+
+                # Append the job ID.
+                self._job_ids.append(job_id)
                 time.sleep(0.1)
 
             else:
