@@ -238,7 +238,7 @@ if __name__ == '__main__':
     #                     help='The name of the model to get form the zoo.')
 
     parser.add_argument('--model_name', type=str,
-                        default='alexnet',
+                        default='resnet50',
                         help='The name of the model to get form the zoo.')
 
     # parser.add_argument('--data_dir', type=str,
