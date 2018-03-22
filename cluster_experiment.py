@@ -249,10 +249,10 @@ class ClusterExperiment(object):
                 print("---")
 
                 print("str(job_id) =")
-                print(job_id[2:-3])
+                print(str(job_id)[2:-3])
                 print("---")
 
-                job_id_str = 'qstat -r ' + job_id[2:-3]
+                job_id_str = 'qstat -r ' + str(job_id[2:-3])
 
                 # Issue qstat command to get job status.
                 p = subprocess.Popen(job_id_str,
