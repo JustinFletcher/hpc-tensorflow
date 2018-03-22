@@ -252,10 +252,10 @@ class ClusterExperiment(object):
                 print(str(job_id)[2:-3])
                 print("---")
 
-                job_id_str = 'qstat -r ' + str(job_id[2:-3])
+                job_id_str = str(job_id)[2:-3]
 
                 # Issue qstat command to get job status.
-                p = subprocess.Popen(job_id_str,
+                p = subprocess.Popen('qstat -r ' + job_id_str,
                                      stdin=subprocess.PIPE,
                                      stdout=subprocess.PIPE,
                                      shell=True)
@@ -271,14 +271,14 @@ class ClusterExperiment(object):
                     job_complete = True
 
                 # Print a diagnostic.
-                print('Job ' + str(job_id)[:-1] + ' complete? ' +
+                print('Job ' + job_id_str + ' complete? ' +
                       str(job_complete) + '.')
 
                 job_complete_flags.append(job_complete)
 
                 if job_complete:
 
-                    p = subprocess.Popen('qdel -Wforce ' + str(job_id).strip('\n'),
+                    p = subprocess.Popen('qdel -Wforce ' + job_id_str,
                                          stdin=subprocess.PIPE,
                                          stdout=subprocess.PIPE,
                                          shell=True)
