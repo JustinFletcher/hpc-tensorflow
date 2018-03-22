@@ -267,7 +267,7 @@ class ClusterExperiment(object):
 
                 if job_complete:
 
-                    p = subprocess.Popen('qdel -Wforce ' + job_id,
+                    p = subprocess.Popen('qdel -Wforce ' + str(job_id),
                                          stdin=subprocess.PIPE,
                                          stdout=subprocess.PIPE,
                                          shell=True)
