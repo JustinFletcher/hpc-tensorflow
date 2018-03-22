@@ -243,7 +243,7 @@ class ClusterExperiment(object):
 
                 # TODO: Handle job completion gracefully.
 
-                job_id_str = str('qstat -r ' + job_id)
+                job_id_str = str('qstat -r ' + str(job_id))
                 print(job_id_str.strip('\n'))
 
                 # Issue qstat command to get job status.
