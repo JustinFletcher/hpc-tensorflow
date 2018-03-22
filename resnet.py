@@ -52,6 +52,7 @@ from __future__ import print_function
 
 import tensorflow as tf
 
+import functools
 
 import tensorflowmodelzoo as zoo
 from tensorflow_model import TensorFlowModel
