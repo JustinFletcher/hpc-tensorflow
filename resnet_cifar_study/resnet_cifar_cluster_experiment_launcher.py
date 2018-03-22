@@ -41,7 +41,7 @@ def main(FLAGS):
                        'loss']
 
     # Wait for the output to return.
-    exp.join_job_output(FLAGS.model_dir,
+    exp.join_job_output(FLAGS.log_dir,
                         FLAGS.log_filename,
                         FLAGS.max_runtime,
                         response_labels)
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     # Instantiate an arg parser.
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--model_dir', type=str,
+    parser.add_argument('--log_dir', type=str,
                         default='/gpfs/projects/ml/log/resnet_cifar_study/',
                         help='Summaries log directory.')
 
