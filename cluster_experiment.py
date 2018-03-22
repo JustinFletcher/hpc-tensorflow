@@ -260,7 +260,7 @@ class ClusterExperiment(object):
                     job_complete = True
 
                 # Print a diagnostic.
-                print('Job ' + job_id[:-1] + ' complete? ' +
+                print('Job ' + str(job_id)[:-1] + ' complete? ' +
                       str(job_complete) + '.')
 
                 job_complete_flags.append(job_complete)
