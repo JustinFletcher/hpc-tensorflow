@@ -420,6 +420,6 @@ class ResNet50TensorFlowModel(TensorFlowModel):
         # output, end_points = alexnet_v2(self.stimulus_placeholder)
 
         with slim.arg_scope(resnet_arg_scope()):
-            outputs, _ = resnet_v2_50(inputs=images_re)
+            outputs, _ = resnet_v2_50(images_re, num_classes=10)
         return(outputs)
         ####################
