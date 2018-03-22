@@ -242,8 +242,14 @@ class ClusterExperiment(object):
             for job_id in self._job_ids:
 
                 # TODO: Handle job completion gracefully.
+
+                print("---")
                 print("Job id")
                 print(job_id)
+                print("---")
+
+                print("str(job_id) =")
+                print(str(job_id))
                 print("---")
 
                 job_id_str = str('qstat -r ' + str(job_id))
