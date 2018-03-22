@@ -282,7 +282,7 @@ class ClusterExperiment(object):
             # with open(FLAGS.log_dir '/' + FLAGS.log_filename, 'w') as csvfile:
 
             # Accomodate Python 2.7 on Hokulea.
-            with open(log_dir + '/' + log_filename, 'wb') as csvfile:
+            with open(log_dir + '/' + log_filename, 'w') as csvfile:
 
                 # Join lists.
                 headers = self.get_parameter_labels() + response_labels
