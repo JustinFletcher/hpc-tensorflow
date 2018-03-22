@@ -243,8 +243,8 @@ class ClusterExperiment(object):
 
                 # TODO: Handle job completion gracefully.
 
-                job_id_str = 'qstat -r ' + str(job_id)
-                print(job_id_str)
+                job_id_str = str('qstat -r ' + job_id)
+                print(job_id_str.strip('\n'))
 
                 # Issue qstat command to get job status.
                 p = subprocess.Popen(job_id_str,
