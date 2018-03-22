@@ -339,17 +339,30 @@ def resnet_main(flags, model_function, input_function):
           'version': flags.version,
       })
 
+
+
+
+
+  # This is the main training loop.
   for _ in range(flags.train_epochs // flags.epochs_per_eval):
     train_hooks = hooks_helper.get_train_hooks(flags.hooks, batch_size=flags.batch_size)
 
     print('Starting a training cycle.')
 
+    # This is the data pull function.
     def input_fn_train():
+      # Need to add a global_step based hook here.
+
+
+
+      # This links back to input_fn in cifar10_main, which in trun links to process_record_dataset in this file!
+
       return input_function(True, flags.data_dir, flags.batch_size,
                             flags.epochs_per_eval, flags.num_parallel_calls,
                             flags.multi_gpu)
 
-    classifier.train(input_fn=input_fn_train, hooks=train_hooks,
+    classifier.train(input_fn=input_fn_train,
+                     hooks=train_hooks,
                      max_steps=flags.max_train_steps)
 
     print('Starting to evaluate.')

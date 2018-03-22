@@ -219,7 +219,6 @@ class ClusterExperiment(object):
 
 # qsub -I -A MHPCC96670DA1 -q standard -l select=1:ncpus=20:mpiprocs=20 -l walltime=1:00:00
 
-
     def join_job_output(self,
                         log_dir,
                         log_filename,

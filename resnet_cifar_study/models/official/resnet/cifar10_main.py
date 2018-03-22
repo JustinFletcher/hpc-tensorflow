@@ -127,9 +127,14 @@ def input_fn(is_training, data_dir, batch_size, num_epochs=1,
 
   num_images = is_training and _NUM_IMAGES['train'] or _NUM_IMAGES['validation']
 
-  return resnet_run_loop.process_record_dataset(dataset, is_training, batch_size,
-                                                _NUM_IMAGES['train'], parse_record, num_epochs, num_parallel_calls,
-                                                examples_per_epoch=num_images, multi_gpu=multi_gpu)
+  return resnet_run_loop.process_record_dataset(dataset,
+                                                is_training,
+                                                batch_size,
+                                                _NUM_IMAGES['train'],
+                                                parse_record, num_epochs,
+                                                num_parallel_calls,
+                                                examples_per_epoch=num_images,
+                                                multi_gpu=multi_gpu)
 
 
 def get_synth_input_fn():
