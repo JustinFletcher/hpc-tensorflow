@@ -81,6 +81,24 @@ class CIFAR10TensorFlowBatchProducer(TensorFlowBatchProducer):
         self.label_size = label_size
         self.input_size = input_size
 
+    def _preprocess_image(self, image, is_training):
+        """Preprocess a single image of layout [height, width, depth]."""
+        if is_training:
+            # Resize the image to add four extra pixels on each side.
+            image = tf.image.resize_image_with_crop_or_pad(image,
+                                                           _HEIGHT + 8,
+                                                           _WIDTH + 8)
+
+            # Randomly crop a [_HEIGHT, _WIDTH] section of the image.
+            image = tf.random_crop(image, [_HEIGHT, _WIDTH, _NUM_CHANNELS])
+
+            # Randomly flip the image horizontally.
+            image = tf.image.random_flip_left_right(image)
+
+        # Subtract off the mean and divide by the variance of the pixels.
+        image = tf.image.per_image_standardization(image)
+        return image
+
     def _parse_record(self, raw_record, is_training):
         """Parse CIFAR-10 image and label from a raw record."""
         # Convert bytes to a vector of uint8 that is record_bytes long.
@@ -100,27 +118,9 @@ class CIFAR10TensorFlowBatchProducer(TensorFlowBatchProducer):
         # and cast as float32.
         image = tf.cast(tf.transpose(depth_major, [1, 2, 0]), tf.float32)
 
-        image = self.preprocess_image(image, is_training)
+        image = self._preprocess_image(image, is_training)
 
         return image, label
-
-    def _preprocess_image(self, image, is_training):
-        """Preprocess a single image of layout [height, width, depth]."""
-        if is_training:
-            # Resize the image to add four extra pixels on each side.
-            image = tf.image.resize_image_with_crop_or_pad(image,
-                                                           _HEIGHT + 8,
-                                                           _WIDTH + 8)
-
-            # Randomly crop a [_HEIGHT, _WIDTH] section of the image.
-            image = tf.random_crop(image, [_HEIGHT, _WIDTH, _NUM_CHANNELS])
-
-            # Randomly flip the image horizontally.
-            image = tf.image.random_flip_left_right(image)
-
-        # Subtract off the mean and divide by the variance of the pixels.
-        image = tf.image.per_image_standardization(image)
-        return image
 
     def _read_and_decode_cifar10(self, filename_queue, is_training):
 
