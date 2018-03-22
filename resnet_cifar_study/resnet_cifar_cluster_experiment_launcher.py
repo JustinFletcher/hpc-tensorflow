@@ -1,11 +1,15 @@
 #!/usr/bin/python
 # Example PBS cluster job submission in Python
 
+import os
+import sys
 import argparse
 import tensorflow as tf
 
 # import pyhpc as hpc
 # hpc.ClusterExperiment()
+
+sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
 from cluster_experiment import ClusterExperiment
 
