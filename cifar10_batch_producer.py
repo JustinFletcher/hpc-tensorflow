@@ -23,47 +23,47 @@ _NUM_IMAGES = {
 # Data processing
 ###############################################################################
 
-def parse_record(raw_record, is_training):
-    """Parse CIFAR-10 image and label from a raw record."""
-    # Convert bytes to a vector of uint8 that is record_bytes long.
-    record_vector = tf.decode_raw(raw_record, tf.uint8)
+# def parse_record(raw_record, is_training):
+#     """Parse CIFAR-10 image and label from a raw record."""
+#     # Convert bytes to a vector of uint8 that is record_bytes long.
+#     record_vector = tf.decode_raw(raw_record, tf.uint8)
 
-    # The first byte represents the label, which we convert from uint8 to int32
-    # and then to one-hot.
-    label = tf.cast(record_vector[0], tf.int32)
-    label = tf.one_hot(label, _NUM_CLASSES)
+#     # The first byte represents the label, which we convert from uint8 to int32
+#     # and then to one-hot.
+#     label = tf.cast(record_vector[0], tf.int32)
+#     label = tf.one_hot(label, _NUM_CLASSES)
 
-    # The remaining bytes after the label represent the image, which we reshape
-    # from [depth * height * width] to [depth, height, width].
-    depth_major = tf.reshape(record_vector[1:_RECORD_BYTES],
-                             [_NUM_CHANNELS, _HEIGHT, _WIDTH])
+#     # The remaining bytes after the label represent the image, which we reshape
+#     # from [depth * height * width] to [depth, height, width].
+#     depth_major = tf.reshape(record_vector[1:_RECORD_BYTES],
+#                              [_NUM_CHANNELS, _HEIGHT, _WIDTH])
 
-    # Convert from [depth, height, width] to [height, width, depth],
-    # and cast as float32.
-    image = tf.cast(tf.transpose(depth_major, [1, 2, 0]), tf.float32)
+#     # Convert from [depth, height, width] to [height, width, depth],
+#     # and cast as float32.
+#     image = tf.cast(tf.transpose(depth_major, [1, 2, 0]), tf.float32)
 
-    image = preprocess_image(image, is_training)
+#     image = preprocess_image(image, is_training)
 
-    return image, label
+#     return image, label
 
 
-def preprocess_image(image, is_training):
-    """Preprocess a single image of layout [height, width, depth]."""
-    if is_training:
-        # Resize the image to add four extra pixels on each side.
-        image = tf.image.resize_image_with_crop_or_pad(image,
-                                                       _HEIGHT + 8,
-                                                       _WIDTH + 8)
+# def preprocess_image(image, is_training):
+#     """Preprocess a single image of layout [height, width, depth]."""
+#     if is_training:
+#         # Resize the image to add four extra pixels on each side.
+#         image = tf.image.resize_image_with_crop_or_pad(image,
+#                                                        _HEIGHT + 8,
+#                                                        _WIDTH + 8)
 
-        # Randomly crop a [_HEIGHT, _WIDTH] section of the image.
-        image = tf.random_crop(image, [_HEIGHT, _WIDTH, _NUM_CHANNELS])
+#         # Randomly crop a [_HEIGHT, _WIDTH] section of the image.
+#         image = tf.random_crop(image, [_HEIGHT, _WIDTH, _NUM_CHANNELS])
 
-        # Randomly flip the image horizontally.
-        image = tf.image.random_flip_left_right(image)
+#         # Randomly flip the image horizontally.
+#         image = tf.image.random_flip_left_right(image)
 
-    # Subtract off the mean and divide by the variance of the pixels.
-    image = tf.image.per_image_standardization(image)
-    return image
+#     # Subtract off the mean and divide by the variance of the pixels.
+#     image = tf.image.per_image_standardization(image)
+#     return image
 
 
 class CIFAR10TensorFlowBatchProducer(TensorFlowBatchProducer):
@@ -100,7 +100,7 @@ class CIFAR10TensorFlowBatchProducer(TensorFlowBatchProducer):
         # and cast as float32.
         image = tf.cast(tf.transpose(depth_major, [1, 2, 0]), tf.float32)
 
-        image = preprocess_image(image, is_training)
+        image = self.preprocess_image(image, is_training)
 
         return image, label
 
@@ -139,7 +139,8 @@ class CIFAR10TensorFlowBatchProducer(TensorFlowBatchProducer):
                 'label': tf.FixedLenFeature([], tf.int64),
             })
 
-        image, label = self._parse_record(raw_record, is_training)
+        # image, label = self._parse_record(raw_record, is_training)
+        image, label = self._parse_record(serialized_example, is_training)
 
         return image, label
 
