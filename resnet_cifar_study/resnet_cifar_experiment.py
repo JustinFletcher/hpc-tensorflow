@@ -18,6 +18,9 @@ def tensorflow_experiment():
     # The path to the training script.
     # train_script='/gpfs/home/fletch/hpc-tensorflow/resnet_cifar_study/models/official/resnet/cifar10_main.py'
 
+    # The script expects a model_dir, use log_dir.
+    FLAGS['model_dir'] = FLAGS.log_dir
+
     # These flags are acceptable to the training script provided by TF.
     script_flags = ['h',
                     'data_dir',
@@ -74,14 +77,14 @@ def tensorflow_experiment():
         # Iterate over the event files in the model_dir.
         for ef in events_file_list:
 
-            print("--New event file")
-            print(ef)
+            # print("--New event file")
+            # print(ef)
 
             # Iterate over each summary file in the model dir.
             for e in tf.train.summary_iterator(ef):
 
-                print("====Start e from tf.train.summary_iterator(ef)========")
-                print(e.step)
+                # print("====Start e from tf.train.summary_iterator(ef)======")
+                # print(e.step)
 
                 # Parse the step.
                 step = e.step
@@ -104,8 +107,8 @@ def tensorflow_experiment():
                 # Iterate over each summary value.
                 for v in e.summary.value:
 
-                    print("=======Start v from e.summary.value========")
-                    print(v.tag)
+                    # print("=======Start v from e.summary.value========")
+                    # print(v.tag)
 
                     # Check if present summary is in the summary list.
                     if v.tag in summaries_to_store:
@@ -113,10 +116,9 @@ def tensorflow_experiment():
                         # If so, append them.
                         row.append(v.simple_value)
 
-                    print("=======End v from e.summary.value========")
-                    # TODO: Add running time.
+                    # print("=======End v from e.summary.value========")
 
-                print("====End e from tf.train.summary_iterator(ef)========")
+                # print("====End e from tf.train.summary_iterator(ef)======")
 
 
 def main(_):
