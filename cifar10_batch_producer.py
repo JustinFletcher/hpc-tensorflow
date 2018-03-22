@@ -81,7 +81,7 @@ class CIFAR10TensorFlowBatchProducer(TensorFlowBatchProducer):
         self.label_size = label_size
         self.input_size = input_size
 
-    def _parse_record(raw_record, is_training):
+    def _parse_record(self, raw_record, is_training):
         """Parse CIFAR-10 image and label from a raw record."""
         # Convert bytes to a vector of uint8 that is record_bytes long.
         record_vector = tf.decode_raw(raw_record, tf.uint8)
@@ -104,7 +104,7 @@ class CIFAR10TensorFlowBatchProducer(TensorFlowBatchProducer):
 
         return image, label
 
-    def _preprocess_image(image, is_training):
+    def _preprocess_image(self, image, is_training):
         """Preprocess a single image of layout [height, width, depth]."""
         if is_training:
             # Resize the image to add four extra pixels on each side.
