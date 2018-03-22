@@ -4,6 +4,7 @@ import tensorflow as tf
 # Import all models.
 import lenet
 import alexnet
+import resnet
 
 
 def doublewrap(function):
@@ -89,6 +90,12 @@ class TensorFlowModelZoo(object):
 
             print(model_name + " is not yet implemented.")
             raise NotImplementedError
+
+        if model_name == 'resnet50':
+
+            tfmodel = resnet.ResNet50TensorFlowModel()
+
+            return(tfmodel)
 
         else:
 
