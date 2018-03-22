@@ -246,7 +246,7 @@ class AlexNetTensorFlowModel(TensorFlowModel):
 
         # resize the image tensors to add channels, 1 in this case
         # required to pass the images to various layers upcoming in the graph
-        images_re = tf.reshape(self.stimulus_placeholder, [128, 224, 224, 3])
+        images_re = tf.reshape(self.stimulus_placeholder, [128, 32, 32, 3])
 
         # zoo.print_tensor_shape(images_re, 'reshaped images shape')
 
