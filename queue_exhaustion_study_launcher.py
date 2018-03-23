@@ -23,7 +23,8 @@ def main(FLAGS):
     exp = ClusterExperiment()
 
     # Set the number of reps for each config.
-    exp.set_rep_count(10)
+    exp.set_rep_count(5)
+
     # Set independent parameters.
     exp.add_design('train_batch_size', [256])
     exp.add_design('batch_interval', [1, 2, 4, 8, 16, 32, 64, 128])
@@ -36,9 +37,9 @@ def main(FLAGS):
     # Launch the experiment.
     exp.launch_experiment(exp_filename=FLAGS.experiment_py_file,
                           log_dir=FLAGS.log_dir,
-                          account_str='MHPCC96670DA1',
+                          account_str='MHPCC96650DE1',
                           queue_str='standard',
-                          module_str='anaconda2/5.0.1 gcc/5.3.0 cudnn/6.0',
+                          module_str='anaconda3/5.0.1 tensorflow',
                           manager='pbs',
                           shuffle_job_order=True)
 
