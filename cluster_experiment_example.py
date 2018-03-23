@@ -97,8 +97,10 @@ def tensorflow_experiment():
         print('step | train_loss | train_error | val_loss |' +
               ' val_error | t | total_time')
 
+        print("Loading val batch")
         # Load the validation set batch into memory.
         val_images, val_labels = sess.run([val_image_batch, val_label_batch])
+        print("Loaded val batch")
 
         # Make a dict to load the val batch onto the placeholders.
         val_dict = {model.stimulus_placeholder: val_images,
@@ -107,6 +109,7 @@ def tensorflow_experiment():
 
         time.sleep(FLAGS.pause_time)
 
+        print("Starting train loop")
         # Iterate until max steps.
         for i in range(FLAGS.max_steps):
 
@@ -116,12 +119,17 @@ def tensorflow_experiment():
 
             start_time = time.time()
 
+
+            print("Getting train batch")
+
             # If it is a batch refresh interval, refresh the batch.
             if((i % FLAGS.batch_interval == 0) or (i == 0)):
 
                 # Update the batch.
                 train_images, train_labels = sess.run([image_batch,
                                                        label_batch])
+
+            print("Got train batch")
 
             # Make a dict to load the batch onto the placeholders.
             train_dict = {model.stimulus_placeholder: train_images,
@@ -130,6 +138,8 @@ def tensorflow_experiment():
 
             # If we have reached a testing interval, test.
             if (i % FLAGS.test_interval == 0):
+
+                print("Running error")
 
                 # Compute error over the training set.
                 train_error = sess.run(model_trainer.error, feed_dict=train_dict)
@@ -142,6 +152,10 @@ def tensorflow_experiment():
 
                 # Compute loss over the validation set.
                 val_loss = sess.run(model_trainer.loss, feed_dict=val_dict)
+
+
+                print("Ran error")
+
 
                 # Store the data we wish to manually report.
                 steps.append(i)
@@ -166,9 +180,11 @@ def tensorflow_experiment():
                 # Reset running times measurment
                 running_times = []
 
+            print("Stepping train.")
             # Optimize the model.
             sess.run(model_trainer.optimize, feed_dict=train_dict)
 
+            print("Stepped train.")
             # train_writer.add_summary(summary, i)
 
             # Update timekeeping variables.
