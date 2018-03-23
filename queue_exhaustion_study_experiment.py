@@ -229,7 +229,7 @@ def tensorflow_experiment():
         sess.close()
 
     # Write the data we saved to a csv file, to be compiled by the launcher.
-    with open(FLAGS.log_dir + '/' + FLAGS.log_filename, 'wb') as csvfile:
+    with open(FLAGS.log_dir + '/' + FLAGS.log_filename, 'w') as csvfile:
 
         # Open a writer and write the header.
         csvwriter = csv.writer(csvfile)
