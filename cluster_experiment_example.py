@@ -262,9 +262,9 @@ if __name__ == '__main__':
                         default='resnet50',
                         help='The name of the model to get form the zoo.')
 
-    parser.add_argument('--data_dir', type=str,
-                        default='../data/mnist',
-                        help='Directory from which to pull data TFRecords.')
+    # parser.add_argument('--data_dir', type=str,
+    #                     default='../data/mnist',
+    #                     help='Directory from which to pull data TFRecords.')
 
     parser.add_argument('--data_dir', type=str,
                         default='/gpfs/projects/ml/data/cifar10',
