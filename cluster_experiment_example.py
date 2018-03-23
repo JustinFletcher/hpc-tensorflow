@@ -278,13 +278,13 @@ if __name__ == '__main__':
                         default='validation.tfrecords',
                         help='Validation dataset filename.')
 
-    parser.add_argument('--train_file', type=str,
-                        default='cifar10_train.tfrecord',
-                        help='Training dataset filename.')
+    # parser.add_argument('--train_file', type=str,
+    #                     default='cifar10_train.tfrecord',
+    #                     help='Training dataset filename.')
 
-    parser.add_argument('--validation_file', type=str,
-                        default='cifar10_test.tfrecord',
-                        help='Validation dataset filename.')
+    # parser.add_argument('--validation_file', type=str,
+    #                     default='cifar10_test.tfrecord',
+    #                     help='Validation dataset filename.')
 
     parser.add_argument('--input_size', type=int,
                         default=28 * 28,
