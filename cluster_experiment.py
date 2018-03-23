@@ -206,12 +206,15 @@ class ClusterExperiment(object):
 
                 # Send job_string to qsub, returning a job ID in bytes.
                 job_id = p.communicate(job_string)[0]
+
                 print(job_id)
                 # Parse the bytes to an ID string.
                 # job_id = str(job_id)
 
                 # Append the job ID.
                 self._job_ids.append(job_id)
+
+                print(self._job_ids)
                 time.sleep(0.1)
 
             else:
@@ -247,6 +250,8 @@ class ClusterExperiment(object):
 
             # Iterate over each job id string.
             for job_id in self._job_ids:
+
+                print("is this thing on?")
 
                 # TODO: Handle job completion gracefully.
 
