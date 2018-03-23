@@ -8,7 +8,12 @@ import numpy as np
 import tensorflow as tf
 
 # Change baseline_model to a model you built with the same interfaces.
-from baseline_model import *
+# from baseline_model import *
+
+from model_trainer import ModelTrainer
+import tensorflowmodelzoo as zoo
+from mnist_batch_producer import MNISTTensorFlowBatchProducer
+
 
 # import tfmodelzoo as zoo
 # model_builder = zoo.get_untrained_model("lenet5")
@@ -45,15 +50,41 @@ def tensorflow_experiment():
     queue_sizes = []
 
     print("------------model_output-------------")
-    # Instantiate a model.
-    model = Model(FLAGS.input_size,
-                  FLAGS.label_size,
-                  FLAGS.learning_rate,
-                  FLAGS.train_enqueue_threads,
-                  FLAGS.val_enqueue_threads,
-                  FLAGS.data_dir,
-                  FLAGS.train_file,
-                  FLAGS.validation_file)
+    # # Instantiate a model.
+    # model = Model(FLAGS.input_size,
+    #               FLAGS.label_size,
+    #               FLAGS.learning_rate,
+    #               FLAGS.train_enqueue_threads,
+    #               FLAGS.val_enqueue_threads,
+    #               FLAGS.data_dir,
+    #               FLAGS.train_file,
+    #               FLAGS.validation_file)
+
+    ######
+
+    model_zoo = zoo.TensorFlowModelZoo()
+    # data_zoo = zoo.TensorFlowDataZoo()
+
+    # TensorFlowModelZoo.get_model() ?
+
+    batch_producer = MNISTTensorFlowBatchProducer(FLAGS.data_dir,
+                                                  FLAGS.train_file,
+                                                  FLAGS.validation_file,
+                                                  FLAGS.input_size,
+                                                  FLAGS.label_size)
+
+    # batch_producer = CIFAR10TensorFlowBatchProducer(FLAGS.data_dir,
+    #                                                 FLAGS.train_file,
+    #                                                 FLAGS.validation_file,
+    #                                                 FLAGS.input_size,
+    #                                                 FLAGS.label_size)
+
+    model = model_zoo.get_model(FLAGS.model_name)
+
+    model_trainer = ModelTrainer(model=model,
+                                 data=batch_producer,
+                                 learning_rate=FLAGS.learning_rate)
+
     print("-------------------------------------")
 
     # Get input data.
@@ -89,13 +120,13 @@ def tensorflow_experiment():
         # print('step | train_loss | train_error | val_loss |' +
         #       ' val_error | t | total_time')
 
-        # Load the validation set batch into memory.
-        val_images, val_labels = sess.run([val_image_batch, val_label_batch])
+        # # Load the validation set batch into memory.
+        # val_images, val_labels = sess.run([val_image_batch, val_label_batch])
 
-        # Make a dict to load the val batch onto the placeholders.
-        val_dict = {model.stimulus_placeholder: val_images,
-                    model.target_placeholder: val_labels,
-                    model.keep_prob: 1.0}
+        # # Make a dict to load the val batch onto the placeholders.
+        # val_dict = {model.stimulus_placeholder: val_images,
+        #             model.target_placeholder: val_labels,
+        #             model.keep_prob: 1.0}
 
         time.sleep(FLAGS.pause_time)
 
@@ -127,16 +158,18 @@ def tensorflow_experiment():
             if (i % FLAGS.test_interval == 0):
 
                 # Compute error over the training set.
-                train_error = sess.run(model.error, feed_dict=train_dict)
+                train_error = sess.run(model_trainer.error, feed_dict=train_dict)
 
                 # Compute loss over the training set.
-                train_loss = sess.run(model.loss, feed_dict=train_dict)
+                train_loss = sess.run(model_trainer.loss, feed_dict=train_dict)
 
                 # Compute error over the validation set.
-                val_error = sess.run(model.error, feed_dict=val_dict)
+                val_error = sess.run(model_trainer.error, feed_dict=train_dict)
+                # val_error = sess.run(model.error, feed_dict=val_dict)
 
                 # Compute loss over the validation set.
-                val_loss = sess.run(model.loss, feed_dict=val_dict)
+                val_loss = sess.run(model_trainer.loss, feed_dict=train_dict)
+                # val_loss = sess.run(model.loss, feed_dict=val_dict)
 
                 # Store the data we wish to manually report.
                 steps.append(i)
@@ -173,7 +206,7 @@ def tensorflow_experiment():
                 #          np.sum(running_times))) 
 
             # Optimize the model.
-            sess.run(model.optimize, feed_dict=train_dict)
+            sess.run(model_trainer.optimize, feed_dict=train_dict)
 
             # train_writer.add_summary(summary, i)
 
