@@ -208,7 +208,7 @@ class ClusterExperiment(object):
                 job_id = p.communicate(job_string)[0]
                 print(job_id)
                 # Parse the bytes to an ID string.
-                job_id = str(job_id)[2:-3]
+                job_id = str(job_id)
 
                 # Append the job ID.
                 self._job_ids.append(job_id)
