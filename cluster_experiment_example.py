@@ -10,8 +10,8 @@ import tensorflow as tf
 # Change baseline_model to a model you built with the same interfaces.
 from model_trainer import ModelTrainer
 import tensorflowmodelzoo as zoo
-# from mnist_batch_producer import MNISTTensorFlowBatchProducer
-from cifar10_batch_producer import CIFAR10TensorFlowBatchProducer
+from mnist_batch_producer import MNISTTensorFlowBatchProducer
+# from cifar10_batch_producer import CIFAR10TensorFlowBatchProducer
 
 
 def tensorflow_experiment():
@@ -41,17 +41,17 @@ def tensorflow_experiment():
 
     # TensorFlowModelZoo.get_model() ?
 
-    # batch_producer = MNISTTensorFlowBatchProducer(FLAGS.data_dir,
-    #                                               FLAGS.train_file,
-    #                                               FLAGS.validation_file,
-    #                                               FLAGS.input_size,
-    #                                               FLAGS.label_size)
+    batch_producer = MNISTTensorFlowBatchProducer(FLAGS.data_dir,
+                                                  FLAGS.train_file,
+                                                  FLAGS.validation_file,
+                                                  FLAGS.input_size,
+                                                  FLAGS.label_size)
 
-    batch_producer = CIFAR10TensorFlowBatchProducer(FLAGS.data_dir,
-                                                    FLAGS.train_file,
-                                                    FLAGS.validation_file,
-                                                    FLAGS.input_size,
-                                                    FLAGS.label_size)
+    # batch_producer = CIFAR10TensorFlowBatchProducer(FLAGS.data_dir,
+    #                                                 FLAGS.train_file,
+    #                                                 FLAGS.validation_file,
+    #                                                 FLAGS.input_size,
+    #                                                 FLAGS.label_size)
 
     model = model_zoo.get_model(FLAGS.model_name)
 
@@ -262,21 +262,21 @@ if __name__ == '__main__':
                         default='resnet50',
                         help='The name of the model to get form the zoo.')
 
-    # parser.add_argument('--data_dir', type=str,
-    #                     default='../data/mnist',
-    #                     help='Directory from which to pull data TFRecords.')
-
     parser.add_argument('--data_dir', type=str,
-                        default='/gpfs/projects/ml/data/cifar10',
+                        default='../data/mnist',
                         help='Directory from which to pull data TFRecords.')
 
-    # parser.add_argument('--train_file', type=str,
-    #                     default='train.tfrecords',
-    #                     help='Training dataset filename.')
+    # parser.add_argument('--data_dir', type=str,
+    #                     default='/gpfs/projects/ml/data/cifar10',
+    #                     help='Directory from which to pull data TFRecords.')
 
-    # parser.add_argument('--validation_file', type=str,
-    #                     default='validation.tfrecords',
-    #                     help='Validation dataset filename.')
+    parser.add_argument('--train_file', type=str,
+                        default='train.tfrecords',
+                        help='Training dataset filename.')
+
+    parser.add_argument('--validation_file', type=str,
+                        default='validation.tfrecords',
+                        help='Validation dataset filename.')
 
     parser.add_argument('--train_file', type=str,
                         default='cifar10_train.tfrecord',
