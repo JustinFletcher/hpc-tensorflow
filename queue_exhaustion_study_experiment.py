@@ -305,6 +305,10 @@ if __name__ == '__main__':
     parser.add_argument('--learning_rate', type=float, default=1e-4,
                         help='Initial learning rate')
 
+    parser.add_argument('--model_name', type=str,
+                        default='resnet50',
+                        help='The name of the model to get form the zoo.')
+
     # These flags specify the data used in the experiment.
     parser.add_argument('--data_dir', type=str,
                         default='../data/mnist',
