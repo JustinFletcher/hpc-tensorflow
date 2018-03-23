@@ -97,10 +97,10 @@ def tensorflow_experiment():
         print('step | train_loss | train_error | val_loss |' +
               ' val_error | t | total_time')
 
-        print("Loading val batch")
+        # print("Loading val batch")
         # Load the validation set batch into memory.
         val_images, val_labels = sess.run([val_image_batch, val_label_batch])
-        print("Loaded val batch")
+        # print("Loaded val batch")
 
         # Make a dict to load the val batch onto the placeholders.
         val_dict = {model.stimulus_placeholder: val_images,
@@ -109,7 +109,7 @@ def tensorflow_experiment():
 
         time.sleep(FLAGS.pause_time)
 
-        print("Starting train loop")
+        # print("Starting train loop")
         # Iterate until max steps.
         for i in range(FLAGS.max_steps):
 
@@ -120,7 +120,7 @@ def tensorflow_experiment():
             start_time = time.time()
 
 
-            print("Getting train batch")
+            # print("Getting train batch")
 
             # If it is a batch refresh interval, refresh the batch.
             if((i % FLAGS.batch_interval == 0) or (i == 0)):
@@ -129,7 +129,7 @@ def tensorflow_experiment():
                 train_images, train_labels = sess.run([image_batch,
                                                        label_batch])
 
-            print("Got train batch")
+            # print("Got train batch")
 
             # Make a dict to load the batch onto the placeholders.
             train_dict = {model.stimulus_placeholder: train_images,
@@ -139,27 +139,27 @@ def tensorflow_experiment():
             # If we have reached a testing interval, test.
             if (i % FLAGS.test_interval == 0):
 
-                print("Running train error")
+                # print("Running train error")
 
                 # Compute error over the training set.
                 train_error = sess.run(model_trainer.error, feed_dict=train_dict)
 
-                print("Running train loss")
+                # print("Running train loss")
                 # Compute loss over the training set.
                 train_loss = sess.run(model_trainer.loss, feed_dict=train_dict)
 
-                print("Running val error")
+                # print("Running val error")
                 # Compute error over the validation set.
                 # val_error = sess.run(model_trainer.error, feed_dict=val_dict)
                 val_error = sess.run(model_trainer.error, feed_dict=train_dict)
 
-                print("Running train loss")
+                # print("Running train loss")
                 # Compute loss over the validation set.
                 # val_loss = sess.run(model_trainer.loss, feed_dict=val_dict)
                 val_loss = sess.run(model_trainer.loss, feed_dict=train_dict)
 
 
-                print("Ran error")
+                # print("Ran error"
 
 
                 # Store the data we wish to manually report.
@@ -266,25 +266,25 @@ if __name__ == '__main__':
                         default='../data/mnist',
                         help='Directory from which to pull data TFRecords.')
 
-    # parser.add_argument('--data_dir', type=str,
-    #                     default='/gpfs/projects/ml/data/cifar10',
-    #                     help='Directory from which to pull data TFRecords.')
-
-    parser.add_argument('--train_file', type=str,
-                        default='train.tfrecords',
-                        help='Training dataset filename.')
-
-    parser.add_argument('--validation_file', type=str,
-                        default='validation.tfrecords',
-                        help='Validation dataset filename.')
+    parser.add_argument('--data_dir', type=str,
+                        default='/gpfs/projects/ml/data/cifar10',
+                        help='Directory from which to pull data TFRecords.')
 
     # parser.add_argument('--train_file', type=str,
-    #                     default='cifar10_train.tfrecord',
+    #                     default='train.tfrecords',
     #                     help='Training dataset filename.')
 
     # parser.add_argument('--validation_file', type=str,
-    #                     default='cifar10_test.tfrecord',
+    #                     default='validation.tfrecords',
     #                     help='Validation dataset filename.')
+
+    parser.add_argument('--train_file', type=str,
+                        default='cifar10_train.tfrecord',
+                        help='Training dataset filename.')
+
+    parser.add_argument('--validation_file', type=str,
+                        default='cifar10_test.tfrecord',
+                        help='Validation dataset filename.')
 
     parser.add_argument('--input_size', type=int,
                         default=28 * 28,
