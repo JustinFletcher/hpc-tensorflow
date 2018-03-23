@@ -131,13 +131,13 @@ class CIFAR10TensorFlowBatchProducer(TensorFlowBatchProducer):
         _, serialized_example = reader.read(filename_queue)
 
         # Parse that example into features.
-        raw_record = tf.parse_single_example(
-            serialized_example,
-            # Defaults are not specified since both keys are required.
-            features={
-                'image_raw': tf.FixedLenFeature([], tf.string),
-                'label': tf.FixedLenFeature([], tf.int64),
-            })
+        # raw_record = tf.parse_single_example(
+        #     serialized_example,
+        #     # Defaults are not specified since both keys are required.
+        #     features={
+        #         'image_raw': tf.FixedLenFeature([], tf.string),
+        #         'label': tf.FixedLenFeature([], tf.int64),
+        #     })
 
         # image, label = self._parse_record(raw_record, is_training)
         image, label = self._parse_record(serialized_example, is_training)
