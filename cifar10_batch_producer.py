@@ -124,6 +124,24 @@ class CIFAR10TensorFlowBatchProducer(TensorFlowBatchProducer):
 
     def _read_and_decode_cifar10(self, filename_queue, is_training):
 
+        # # Instantiate a TFRecord reader.
+        # reader = tf.TFRecordReader()
+
+        # # Read a single example from the input queue.
+        # _, serialized_example = reader.read(filename_queue)
+
+        # # Parse that example into features.
+        # raw_record = tf.parse_single_example(
+        #     serialized_example,
+        #     # Defaults are not specified since both keys are required.
+        #     features={
+        #         'image': tf.FixedLenFeature([], tf.string),
+        #         'label': tf.FixedLenFeature([], tf.int64),
+        #     })
+
+        # # image, label = self._parse_record(raw_record, is_training)
+        # image, label = self._parse_record(raw_record, is_training)
+
         # Instantiate a TFRecord reader.
         reader = tf.TFRecordReader()
 
@@ -131,16 +149,41 @@ class CIFAR10TensorFlowBatchProducer(TensorFlowBatchProducer):
         _, serialized_example = reader.read(filename_queue)
 
         # Parse that example into features.
-        raw_record = tf.parse_single_example(
+        features = tf.parse_single_example(
             serialized_example,
             # Defaults are not specified since both keys are required.
             features={
-                'image_raw': tf.FixedLenFeature([], tf.string),
+                'image': tf.FixedLenFeature([], tf.string),
                 'label': tf.FixedLenFeature([], tf.int64),
             })
 
-        # image, label = self._parse_record(raw_record, is_training)
-        image, label = self._parse_record(raw_record, is_training)
+        # Convert from a scalar string tensor (whose single string has
+        # length mnist.IMAGE_PIXELS) to a uint8 tensor with shape
+        # [mnist.IMAGE_PIXELS].
+        image = tf.decode_raw(features['image'], tf.uint8)
+        image.set_shape([self.input_size])
+
+        # OPTIONAL: Could reshape into a 28x28 image and apply distortions
+        # here.  Since we are not applying any distortions in this
+        # example, and the next step expects the image to be flattened
+        # into a vector, we don't bother.
+
+        # Convert from [0, 255] -> [-0.5, 0.5] floats.
+        image = tf.cast(image, tf.float32) * (1. / 255) - 0.5
+
+        # resize the image tensors to add channels, 1 in this case
+        # required to pass the images to various layers upcoming in the graph
+        image = tf.reshape(image, [32, 32, 3])
+
+        # Convert label from a scalar uint8 tensor to an int32 scalar.
+        label_batch = features['label']
+
+        label = tf.one_hot(label_batch,
+                           self.label_size,
+                           on_value=1.0,
+                           off_value=0.0)
+
+        return image, label
 
         return image, label
 
