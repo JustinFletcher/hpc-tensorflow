@@ -99,13 +99,13 @@ def tensorflow_experiment():
 
         # print("Loading val batch")
         # Load the validation set batch into memory.
-        val_images, val_labels = sess.run([val_image_batch, val_label_batch])
+        # val_images, val_labels = sess.run([val_image_batch, val_label_batch])
         # print("Loaded val batch")
 
         # Make a dict to load the val batch onto the placeholders.
-        val_dict = {model.stimulus_placeholder: val_images,
-                    model.target_placeholder: val_labels,
-                    model.keep_prob: 1.0}
+        # val_dict = {model.stimulus_placeholder: val_images,
+        #             model.target_placeholder: val_labels,
+        #             model.keep_prob: 1.0}
 
         time.sleep(FLAGS.pause_time)
 
