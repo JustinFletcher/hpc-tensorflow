@@ -166,7 +166,7 @@ class CIFAR10TensorFlowBatchProducer(TensorFlowBatchProducer):
 
             # Shuffle the examples and collect them into batch_size batches.
             # (Internally uses a RandomShuffleQueue.)
-            # We run this in two threads to avoid being a bottleneck.
+            # We run this in two threads to avoid being a bottleneck.  
             images, sparse_labels = tf.train.shuffle_batch(
                 [image, label],
                 batch_size=batch_size,
