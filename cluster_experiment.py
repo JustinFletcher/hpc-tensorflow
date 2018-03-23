@@ -201,7 +201,8 @@ class ClusterExperiment(object):
                 # Print your job string.
                 print(job_string)
                 print("about to bytes")
-                job_string = bytes(job_string, 'utf-8')
+                # job_string = bytes(job_string, 'utf-8')
+                job_string = bytes(job_string)
 
                 # Send job_string to qsub, returning a job ID in bytes.
                 job_id = p.communicate(job_string)[0]
