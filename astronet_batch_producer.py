@@ -38,7 +38,10 @@ class AstroNetBatchProducer(TensorFlowBatchProducer):
                 'image/width': tf.FixedLenFeature([], tf.int64, 1),
                 'image/depth': tf.FixedLenFeature([], tf.int64, 1),
                 'image/filename': tf.FixedLenFeature([], tf.string, default_value=''),
+                'image/source_id': tf.FixedLenFeature([], tf.string, default_value=''),
+                'image/key/sha256': tf.FixedLenFeature([], tf.string, default_value=''),
                 'image/encoded': tf.FixedLenFeature([], tf.string, default_value=''),
+                'image/format': tf.FixedLenFeature([], tf.string, default_value=''),
                 'image/object/bbox/ymin': tf.VarLenFeature(tf.float32),
                 'image/object/bbox/ymax': tf.VarLenFeature(tf.float32),
                 'image/object/bbox/xmin': tf.VarLenFeature(tf.float32),
@@ -60,10 +63,9 @@ class AstroNetBatchProducer(TensorFlowBatchProducer):
         features = tf.parse_single_example(
             serialized_example,
             self.keys_to_features)
-            # })
 
         # Convert from a scalar string tensor to a uint8 tensor with shape [height,width,channels].
-        image = tf.decode_raw(features['image/encoded'], tf.uint8)
+        image = tf.image.decode_jpeg(features['image/encoded'],channels=3)
 
         height = tf.cast(features['image/height'], tf.int32)
         width = tf.cast(features['image/width'], tf.int32)
@@ -347,27 +349,27 @@ if __name__ == '__main__':
                         help='Directory where to save the batch images')
     parser.add_argument('--train_tfrecords',
                         type=str, 
-                        default='train.tfrecords', 
-                        help='train.tfrecords input file')
+                        default='astronet_train.tfrecords',
+                        help='astronet_train.tfrecords input file')
     parser.add_argument('--test_tfrecords',
                         type=str, 
-                        default='test.tfrecords', 
-                        help='test.tfrecords input file')
+                        default='astronet_test.tfrecords',
+                        help='astronet_test.tfrecords input file')
     parser.add_argument('--valid_tfrecords',
                         type=str, 
-                        default='valid.tfrecords', 
-                        help='valid.tfrecords input file')
+                        default='astronet_valid.tfrecords',
+                        help='astronet_valid.tfrecords input file')
     parser.add_argument('--train_batch_out',
                         type=str, 
-                        default='test_batch_producer/train', 
+                        default='test_batch_producer/train',
                         help='partial path to batch producer train output')
     parser.add_argument('--test_batch_out',
                         type=str, 
-                        default='test_batch_producer/test', 
+                        default='test_batch_producer/test',
                         help='partial path to batch producer test output')
     parser.add_argument('--valid_batch_out',
                         type=str, 
-                        default='test_batch_producer/valid', 
+                        default='test_batch_producer/valid',
                         help='partial path to batch producer valid output')
     FLAGS, unparsed = parser.parse_known_args()
     tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)

@@ -25,13 +25,16 @@ from __future__ import division
 from __future__ import print_function
 
 import argparse
+import hashlib
+import io
+import logging
 import os
 import sys
 import glob
 import numpy as np
 
 from PIL import Image
-import skimage.io as io
+# import skimage.io
 
 import tensorflow as tf
 
@@ -92,7 +95,7 @@ def convert_astronet_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True)
     # remove the last '' element from the list
     image_path_list = image_path_list[:-1] 
 
-    annot_str = image_str.replace('.png', '.txt')
+    annot_str = image_str.replace('.jpg', '.txt')
     annot_path_list = annot_str.split('\n')
     # remove the last '' element from the list
     annot_path_list = annot_path_list[:-1]
@@ -105,16 +108,27 @@ def convert_astronet_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True)
 
     # Iterate over the examples.
     for index in range(num_examples):
-        image = np.array(Image.open(image_path_list[index]))
+        # image = np.array(Image.open(image_path_list[index]))
+
+        with tf.gfile.GFile(image_path_list[index], 'rb') as fid:
+            encoded_jpg = fid.read()
+        encoded_jpg_io = io.BytesIO(encoded_jpg)
+        image = Image.open(encoded_jpg_io)
+        if image.format != 'JPEG':
+            raise ValueError('Image format not JPEG')
+        key = hashlib.sha256(encoded_jpg).hexdigest()
+        # convert to a numpy array:
+        image = np.array(image)
         h = int(image.shape[0])
         w = int(image.shape[1])
         c = int(image.shape[2])
         #check if RGBA format and convert to RGB if true:
         if c == 4:
             # print('Image is RGBA. Convert to RGB.')
-            image = image[:,:,:3]
-            c = 3
-        image_raw = image.tostring()
+            raise ValueError('Image is RGBA')
+        #     image = image[:,:,:3]
+        #     c = 3
+        # image_raw = image.tostring()
 
         annotations = read_annotation_file(annot_path_list[index])
         # Note: annotation data is already normalized:
@@ -127,13 +141,15 @@ def convert_astronet_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True)
         filename = image_path_list[index].split('/')[-1]
         # print('filename',filename)
 
-
         example = tf.train.Example(features=tf.train.Features(feature={
             'image/height': dataset_util.int64_feature(h),
             'image/width': dataset_util.int64_feature(w),
             'image/depth': dataset_util.int64_feature(c),
             'image/filename': dataset_util.bytes_feature(filename.encode('utf8')),
-            'image/encoded': dataset_util.bytes_feature(image_raw),
+            'image/source_id': dataset_util.bytes_feature(filename.encode('utf8')),
+            'image/key/sha256': dataset_util.bytes_feature(key.encode('utf8')),
+            'image/encoded': dataset_util.bytes_feature(encoded_jpg),
+            'image/format': dataset_util.bytes_feature('jpeg'.encode('utf8')),
             'image/object/bbox/ymin': dataset_util.float_list_feature(ymin_norm),
             'image/object/bbox/ymax': dataset_util.float_list_feature(ymax_norm),
             'image/object/bbox/xmin': dataset_util.float_list_feature(xmin_norm),
@@ -169,12 +185,14 @@ def convert_astronet_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True)
             filename_recon = example.features.feature['image/filename'].bytes_list.value[0].decode('utf-8')
             # print('filename_recon',filename_recon)
 
-            img_string = (example.features.feature['image/encoded']
+            encoded_jpg_recon = (example.features.feature['image/encoded']
                                   .bytes_list
                                   .value[0])
 
-            img_1d = np.fromstring(img_string, dtype=np.uint8)
-            image_recon = img_1d.reshape((height_recon, width_recon, depth_recon))
+            encoded_jpg_io_recon  = io.BytesIO(encoded_jpg_recon)
+            image_recon = Image.open(encoded_jpg_io_recon)
+            # img_1d = np.fromstring(img_string, dtype=np.uint8)
+            # image_recon = img_1d.reshape((height_recon, width_recon, depth_recon))
 
             ymin_recon = np.array(example.features.feature['image/object/bbox/ymin'].float_list.value)
             ymax_recon = np.array(example.features.feature['image/object/bbox/ymax'].float_list.value)
@@ -184,16 +202,26 @@ def convert_astronet_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True)
             class_label_recon = np.array(example.features.feature['image/object/class/label'].int64_list.value)
 
             # get origiinal image, annot:
-            image = np.array(Image.open(image_path_list[index]))
+            # image = np.array(Image.open(image_path_list[index]))
 
+            with tf.gfile.GFile(image_path_list[index], 'rb') as fid:
+                encoded_jpg = fid.read()
+            encoded_jpg_io = io.BytesIO(encoded_jpg)
+            image = Image.open(encoded_jpg_io)
+            if image.format != 'JPEG':
+                raise ValueError('Image format not JPEG')
+            key = hashlib.sha256(encoded_jpg).hexdigest()
+            # convert to a numpy array:
+            image = np.array(image)
             height = int(image.shape[0])
             width = int(image.shape[1])
             depth = int(image.shape[2])
             #check if RGBA format and convert to RGB if true:
             if depth == 4:
                 # print('Image is RGBA. Convert to RGB.')
-                image = image[:,:,:3]
-                depth = 3
+                raise ValueError('Image is RGBA')
+                # image = image[:,:,:3]
+                # depth = 3
 
             filename = image_path_list[index].split('/')[-1]
 
@@ -241,6 +269,7 @@ def convert_astronet_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True)
                 print('image bbox class_label is not equal for index:',index, class_label, class_label_recon)
 
             index += 1
+            
             # break  # debug
 
     print('Done')
@@ -254,9 +283,9 @@ def main(unused_argv):
     path_to_test_txt = os.path.join(sourceDir, 'test.txt')
     path_to_valid_txt = os.path.join(sourceDir, 'valid.txt')
 
-    path_to_train_tfrecords = os.path.join(sourceDir, 'train.tfrecords')
-    path_to_test_tfrecords = os.path.join(sourceDir, 'test.tfrecords')
-    path_to_valid_tfrecords = os.path.join(sourceDir, 'valid.tfrecords')
+    path_to_train_tfrecords = os.path.join(sourceDir, 'astronet_train.tfrecords')
+    path_to_test_tfrecords = os.path.join(sourceDir, 'astronet_test.tfrecords')
+    path_to_valid_tfrecords = os.path.join(sourceDir, 'astronet_valid.tfrecords')
 
     print('Generating train.tfrecords...')
     convert_astronet_to_tfrecords(
