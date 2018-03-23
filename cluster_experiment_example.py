@@ -139,19 +139,24 @@ def tensorflow_experiment():
             # If we have reached a testing interval, test.
             if (i % FLAGS.test_interval == 0):
 
-                print("Running error")
+                print("Running train error")
 
                 # Compute error over the training set.
                 train_error = sess.run(model_trainer.error, feed_dict=train_dict)
 
+                print("Running train loss")
                 # Compute loss over the training set.
                 train_loss = sess.run(model_trainer.loss, feed_dict=train_dict)
 
+                print("Running val error")
                 # Compute error over the validation set.
-                val_error = sess.run(model_trainer.error, feed_dict=val_dict)
+                # val_error = sess.run(model_trainer.error, feed_dict=val_dict)
+                val_error = sess.run(model_trainer.error, feed_dict=train_dict)
 
+                print("Running train loss")
                 # Compute loss over the validation set.
-                val_loss = sess.run(model_trainer.loss, feed_dict=val_dict)
+                # val_loss = sess.run(model_trainer.loss, feed_dict=val_dict)
+                val_loss = sess.run(model_trainer.loss, feed_dict=train_dict)
 
 
                 print("Ran error")
