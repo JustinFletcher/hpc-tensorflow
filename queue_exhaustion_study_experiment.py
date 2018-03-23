@@ -88,10 +88,10 @@ def tensorflow_experiment():
     print("-------------------------------------")
 
     # Get input data.
-    image_batch, label_batch = model.get_train_batch_ops(
+    image_batch, label_batch = batch_producer.get_train_batch_ops(
         batch_size=FLAGS.train_batch_size)
 
-    (val_image_batch, val_label_batch) = model.get_val_batch_ops(
+    (val_image_batch, val_label_batch) = batch_producer.get_val_batch_ops(
         batch_size=FLAGS.val_batch_size)
 
     # Merge the summary.
