@@ -101,4 +101,3 @@ class TensorFlowModelZoo(object):
 
             print(model_name + " is not a recognized model name.")
             raise NotImplementedError
-
