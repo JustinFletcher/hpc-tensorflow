@@ -19,7 +19,10 @@ def tensorflow_experiment():
     # train_script='/gpfs/home/fletch/hpc-tensorflow/resnet_cifar_study/models/official/resnet/cifar10_main.py'
 
     # The script expects a model_dir, use log_dir.
-    FLAGS['train_dir'] = FLAGS.log_dir
+    # FLAGS['train_dir'] = FLAGS.log_dir
+    vars(FLAGS)['model_dir'] = FLAGS.log_dir
+
+    print(FLAGS.model_dir)
 
     # # These flags are acceptable to the training script provided by TF.
     # script_flags = ['h',
@@ -68,7 +71,7 @@ def tensorflow_experiment():
     os.system("python %s %s" % (FLAGS.train_script, flags_string))
 
     # Get a list of events filenames in the model_dir.
-    events_file_list = glob.glob(FLAGS.model_dir + 'events.out.tfevents.*')
+    events_file_list = glob.glob(FLAGS.log_dir + 'events.out.tfevents.*')
 
     print("Event file list")
     print(events_file_list)
