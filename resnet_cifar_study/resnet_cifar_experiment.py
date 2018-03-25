@@ -133,7 +133,7 @@ if __name__ == '__main__':
 
     # Establish default arguements.
     parser.add_argument('--train_script', type=str,
-                        default='/gpfs/home/fletch/hpc-tensorflow/resnet_cifar_study/models/official/resnet/cifar10_main.py',
+                        default='/gpfs/projects/ml/hpc-tensorflow/resnet_cifar_study/models/official/resnet/cifar10_main.py',
                         help='The core training script.')
 
     parser.add_argument('--log_dir', type=str,
