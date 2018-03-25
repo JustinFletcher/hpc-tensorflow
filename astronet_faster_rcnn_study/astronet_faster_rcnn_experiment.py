@@ -22,8 +22,6 @@ def tensorflow_experiment():
     # FLAGS['train_dir'] = FLAGS.log_dir
     vars(FLAGS)['model_dir'] = FLAGS.log_dir
 
-    print(FLAGS.model_dir)
-
     # # These flags are acceptable to the training script provided by TF.
     # script_flags = ['h',
     #                 'data_dir',
@@ -145,15 +143,15 @@ if __name__ == '__main__':
 
     # Establish default arguements.
     parser.add_argument('--train_script', type=str,
-                        default='/gpfs/projects/ml/hpc-tensorflow/astronet_faster_rcnn_resnet101_study/models/research/object_detection/train.py',
+                        default='/gpfs/projects/ml/hpc-tensorflow/astronet_faster_rcnn_study/models/research/object_detection/train.py',
                         help='The core training script.')
 
     parser.add_argument('--log_dir', type=str,
-                        default='/gpfs/projects/ml/log/astronet_faster_rcnn_resnet101_study/',
+                        default='/gpfs/projects/ml/log/astronet_faster_rcnn_study/',
                         help='Model checkpoint and event directory.')
 
     parser.add_argument('--pipeline_config_path', type=str,
-                        default='/gpfs/projects/ml/hpc-tensorflow/astronet_faster_rcnn_resnet101_study/',
+                        default='/gpfs/projects/ml/hpc-tensorflow/astronet_faster_rcnn_study/',
                         help='Path to pipeling config.')
 
     # These flags specify the data used in the experiment.
