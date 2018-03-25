@@ -42,6 +42,7 @@ Example usage:
 """
 
 import functools
+import sys
 import json
 import os
 import tensorflow as tf
