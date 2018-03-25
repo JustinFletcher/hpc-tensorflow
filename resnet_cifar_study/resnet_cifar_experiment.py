@@ -19,7 +19,7 @@ def tensorflow_experiment():
     # train_script='/gpfs/home/fletch/hpc-tensorflow/resnet_cifar_study/models/official/resnet/cifar10_main.py'
 
     # The script expects a model_dir, use log_dir.
-    FLAGS['model_dir'] = FLAGS.log_dir
+    # FLAGS['model_dir'] = FLAGS.log_dir
 
     # These flags are acceptable to the training script provided by TF.
     script_flags = ['h',
