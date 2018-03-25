@@ -13,7 +13,6 @@ sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
 from cluster_experiment import ClusterExperiment
 
-
 def main(FLAGS):
 
     # Clear and remake the log directory.
@@ -80,7 +79,7 @@ if __name__ == '__main__':
                         help='Number of seconds to run before giving up.')
 
     parser.add_argument('--experiment_py_file', type=str,
-                        default='/gpfs/home/fletch/hpc-tensorflow/resnet_cifar_study/resnet_cifar_experiment.py',
+                        default='/gpfs/projects/ml/hpc-tensorflow/resnet_cifar_study/resnet_cifar_experiment.py',
                         help='Number of seconds to run before giving up.')
 
     # Parse known arguements.
