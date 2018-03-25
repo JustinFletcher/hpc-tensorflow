@@ -9,11 +9,11 @@ import tensorflow as tf
 def tensorflow_experiment():
 
     # Clear existing directory.
-    if tf.gfile.Exists(FLAGS.model_dir):
+    if tf.gfile.Exists(FLAGS.log_dir):
 
-        tf.gfile.DeleteRecursively(FLAGS.model_dir)
+        tf.gfile.DeleteRecursively(FLAGS.log_dir)
 
-    tf.gfile.MakeDirs(FLAGS.model_dir)
+    tf.gfile.MakeDirs(FLAGS.log_dir)
 
     # The path to the training script.
     # train_script='/gpfs/home/fletch/hpc-tensorflow/resnet_cifar_study/models/official/resnet/cifar10_main.py'
