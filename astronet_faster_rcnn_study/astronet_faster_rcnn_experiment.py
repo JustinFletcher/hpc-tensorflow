@@ -19,29 +19,41 @@ def tensorflow_experiment():
     # train_script='/gpfs/home/fletch/hpc-tensorflow/resnet_cifar_study/models/official/resnet/cifar10_main.py'
 
     # The script expects a model_dir, use log_dir.
-    FLAGS['model_dir'] = FLAGS.log_dir
+    FLAGS['train_dir'] = FLAGS.log_dir
 
-    # These flags are acceptable to the training script provided by TF.
-    script_flags = ['h',
-                    'data_dir',
-                    'model_dir',
-                    'train_epochs',
-                    'epochs_per_eval',
-                    'batch_size',
-                    'multi_gpu',
-                    'hooks',
-                    'num_parallel_calls',
-                    'inter_op_parallelism_threads',
-                    'intra_op_parallelism_threads',
-                    'use_synthetic_data',
-                    'max_train_steps',
-                    'data_format',
-                    'version',
-                    'resnet_size']
+    # # These flags are acceptable to the training script provided by TF.
+    # script_flags = ['h',
+    #                 'data_dir',
+    #                 'model_dir',
+    #                 'train_epochs',
+    #                 'epochs_per_eval',
+    #                 'batch_size',
+    #                 'multi_gpu',
+    #                 'hooks',
+    #                 'num_parallel_calls',
+    #                 'inter_op_parallelism_threads',
+    #                 'intra_op_parallelism_threads',
+    #                 'use_synthetic_data',
+    #                 'max_train_steps',
+    #                 'data_format',
+    #                 'version',
+    #                 'resnet_size']
 
-    # These are the summary tags to store.
-    summaries_to_store = ['global_step/sec',
-                          'loss']
+    # # These are the summary tags to store.
+    # summaries_to_store = ['global_step/sec',
+    #                       'loss']
+
+    # # Initialize an empty sting.
+    # flags_string = ""
+
+    # # Iterate over the input flags... If in 2.7, use vars(FLAGS).iteritems()
+    # for key, value in vars(FLAGS).items():
+
+    #     # If the input flag is acceptable for this script...
+    #     if key in script_flags:
+
+    #         # ...append it to the string.
+    #         flags_string += " --%s=%s" % (key, value)
 
     # Initialize an empty sting.
     flags_string = ""
@@ -49,11 +61,8 @@ def tensorflow_experiment():
     # Iterate over the input flags... If in 2.7, use vars(FLAGS).iteritems()
     for key, value in vars(FLAGS).items():
 
-        # If the input flag is acceptable for this script...
-        if key in script_flags:
-
-            # ...append it to the string.
-            flags_string += " --%s=%s" % (key, value)
+        # ...append it to the string.
+        flags_string += " --%s=%s" % (key, value)
 
     # Run the training script with the constructed flag string, blocking.
     os.system("python %s %s" % (FLAGS.train_script, flags_string))
@@ -133,12 +142,16 @@ if __name__ == '__main__':
 
     # Establish default arguements.
     parser.add_argument('--train_script', type=str,
-                        default='/gpfs/home/fletch/hpc-tensorflow/astronet_faster_rcnn_resnet101_study/models/research/object_detection/train.py',
+                        default='/gpfs/projects/ml/hpc-tensorflow/astronet_faster_rcnn_resnet101_study/models/research/object_detection/train.py',
                         help='The core training script.')
 
-    parser.add_argument('--model_dir', type=str,
-                        default='/gpfs/projects/ml/tfmodels/astronet_faster_rcnn_resnet101_study/',
+    parser.add_argument('--log_dir', type=str,
+                        default='/gpfs/projects/ml/log/astronet_faster_rcnn_resnet101_study/',
                         help='Model checkpoint and event directory.')
+
+    parser.add_argument('--pipeline_config_path', type=str,
+                        default='/gpfs/projects/ml/hpc-tensorflow/astronet_faster_rcnn_resnet101_study/',
+                        help='Path to pipeling config.')
 
     # These flags specify the data used in the experiment.
     parser.add_argument('--train_epochs', type=int,
