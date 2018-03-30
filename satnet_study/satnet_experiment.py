@@ -20,7 +20,7 @@ def tensorflow_experiment():
 
     # The script expects a model_dir, use log_dir.
     # FLAGS['train_dir'] = FLAGS.log_dir
-    vars(FLAGS)['model_dir'] = FLAGS.log_dir
+    vars(FLAGS)['train_dir'] = FLAGS.log_dir
 
     # # These flags are acceptable to the training script provided by TF.
     # script_flags = ['h',
