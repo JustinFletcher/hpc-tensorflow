@@ -33,8 +33,8 @@ from object_detection.utils import ops as util_ops
 from object_detection.utils import variables_helper
 # from deployment import model_deploy
 
-slim = tf.contrib.slim
-from slim.deployment import model_deploy
+# slim = tf.contrib.slim
+from tf.contrib.slim.deployment import model_deploy
 
 
 def create_input_queue(batch_size_per_clone, create_tensor_dict_fn,
