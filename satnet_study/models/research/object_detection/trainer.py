@@ -37,7 +37,7 @@ from slim.deployment import model_deploy
 
 # from deployment import model_deploy
 
-# slim = tf.contrib.slim
+slim = tf.contrib.slim
 # from slim.deployment import model_deploy
 
 
