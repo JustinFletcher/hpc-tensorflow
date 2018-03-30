@@ -10,9 +10,7 @@
 ## Enter the proper queue
 #PBS -q standard
 #PBS -A MHPCC96650DE1
-# module load anaconda2/5.0.1 gcc/5.3.0 cudnn/6.0
-# module load tensorflow/1.4.0
+#PBS -N satnet_rcnn_rn101_4w
 module load anaconda3/5.0.1 tensorflow
-cd /gpfs/home/fletch/hpc-tensorflow/satnet_study/
+cd /gpfs/projects/ml/hpc-tensorflow/satnet_study/
 python satnet_experiment.py --worker_replicas=4 --ps_tasks=1
-# python astronet_faster-rcnn_resnet101_cluster_experiment_launcher.py
