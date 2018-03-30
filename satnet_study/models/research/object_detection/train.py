@@ -50,8 +50,7 @@ import tensorflow as tf
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 sys.path.insert(1, os.path.join(sys.path[0], '.'))
-sys.path.insert(1, os.path.join(sys.path[0], '../slim'))
-sys.path.insert(1, os.path.join(sys.path[0], '../../research'))
+sys.path.insert(1, os.path.join(sys.path[0], './slim'))
 
 from object_detection import trainer
 from object_detection.builders import dataset_builder
