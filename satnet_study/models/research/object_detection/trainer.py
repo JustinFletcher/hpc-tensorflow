@@ -22,7 +22,11 @@ DetectionModel.
 import functools
 
 import tensorflow as tf
-import tensorflow.contrib.slim as slim
+# import tensorflow.contrib.slim as slim
+
+sys.path.insert(1, os.path.join(sys.path[0], '../'))
+
+from slim.deployment import model_deploy
 
 from object_detection.builders import optimizer_builder
 from object_detection.builders import preprocessor_builder
@@ -34,7 +38,7 @@ from object_detection.utils import variables_helper
 # from deployment import model_deploy
 
 # slim = tf.contrib.slim
-from slim.deployment import model_deploy
+# from slim.deployment import model_deploy
 
 
 def create_input_queue(batch_size_per_clone, create_tensor_dict_fn,
