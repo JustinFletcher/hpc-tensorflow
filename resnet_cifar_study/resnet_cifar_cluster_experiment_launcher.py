@@ -9,7 +9,7 @@ import tensorflow as tf
 # import pyhpc as hpc
 # hpc.ClusterExperiment()
 
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
+sys.path.insert(1, os.path.join(sys.path[0], '../../'))
 
 from cluster_experiment import ClusterExperiment
 
@@ -30,9 +30,9 @@ def main(FLAGS):
     exp.set_rep_count(5)
 
     # Set independent parameters.
-    exp.add_design('train_batch_size', [256])
-    exp.add_design('batch_interval', [1, 2, 4, 8, 16, 32, 64, 128])
-    exp.add_design('train_enqueue_threads', [1, 2, 4, 8, 16, 32, 64, 128])
+    exp.add_design('train_batch_size', [128, 256])
+    # exp.add_design('batch_interval', [1, 2, 4, 8, 16, 32, 64, 128])
+    # exp.add_design('train_enqueue_threads', [1, 2, 4, 8, 16, 32, 64, 128])
     exp.add_design('learning_rate', [0.0001])
     exp.add_design('max_steps', [10000])
     exp.add_design('test_interval', [100])
