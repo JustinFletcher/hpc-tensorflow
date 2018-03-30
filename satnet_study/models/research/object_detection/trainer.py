@@ -22,8 +22,8 @@ DetectionModel.
 import functools
 
 import tensorflow as tf
-# import tensorflow.contrib.slim as slim
-from tf.contrib.slim.deployment import model_deploy
+import tensorflow.contrib.slim as slim
+from slim.deployment import model_deploy
 
 from object_detection.builders import optimizer_builder
 from object_detection.builders import preprocessor_builder
