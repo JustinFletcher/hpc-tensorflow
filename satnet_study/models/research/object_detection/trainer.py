@@ -34,6 +34,7 @@ from object_detection.utils import variables_helper
 # from deployment import model_deploy
 
 # slim = tf.contrib.slim
+print("debug.")
 from tf.contrib.slim.deployment import model_deploy
 
 
