@@ -75,7 +75,7 @@ def tensorflow_experiment():
     print(events_file_list)
 
     # Write the data we saved to a csv file.
-    with open(FLAGS.model_dir + FLAGS.log_filename, 'w') as csvfile:
+    with open(FLAGS.log_dir + FLAGS.log_filename, 'w') as csvfile:
 
         # Open a writer and write the header.
         csvwriter = csv.writer(csvfile)
@@ -151,7 +151,7 @@ if __name__ == '__main__':
                         help='Model checkpoint and event directory.')
 
     parser.add_argument('--pipeline_config_path', type=str,
-                        default='/gpfs/projects/ml/hpc-tensorflow/satnet_study/',
+                        default='/gpfs/projects/ml/hpc-tensorflow/satnet_study/faster_rcnn_resnet101_astronet.config',
                         help='Path to pipeling config.')
 
     # These flags specify the data used in the experiment.
