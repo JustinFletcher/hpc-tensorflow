@@ -24,7 +24,8 @@ import functools
 import tensorflow as tf
 # import tensorflow.contrib.slim as slim
 
-# sys.path.insert(1, os.path.join(sys.path[0], '../'))
+sys.path.insert(1, os.path.join(sys.path[0], '../'))
+sys.path.insert(1, os.path.join(sys.path[0], '../slim/'))
 
 from slim.deployment import model_deploy
 
