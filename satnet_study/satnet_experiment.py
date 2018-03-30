@@ -66,6 +66,7 @@ def tensorflow_experiment():
         flags_string += " --%s=%s" % (key, value)
 
     # Run the training script with the constructed flag string, blocking.
+    print("Calling: python %s %s" % (FLAGS.train_script, flags_string))
     os.system("python %s %s" % (FLAGS.train_script, flags_string))
 
     # Get a list of events filenames in the model_dir.
