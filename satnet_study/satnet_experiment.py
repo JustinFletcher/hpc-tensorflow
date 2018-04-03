@@ -155,20 +155,6 @@ if __name__ == '__main__':
                         default='/gpfs/projects/ml/hpc-tensorflow/satnet_study/faster_rcnn_resnet101_astronet.config',
                         help='Path to pipeling config.')
 
-    # These flags specify the data used in the experiment.
-    parser.add_argument('--train_epochs', type=int,
-                        default=6,
-                        help='Directory from which to pull data TFRecords.')
-
-    parser.add_argument('--epochs_per_eval', type=int,
-                        default=2,
-                        help='Directory from which to pull data TFRecords.')
-
-    # These flags specify the data used in the experiment.
-    parser.add_argument('--data_dir', type=str,
-                        default='/gpfs/projects/ml/data/cifar10_official',
-                        help='Directory from which to pull data TFRecords.')
-
     parser.add_argument('--log_filename', type=str,
                         default='defualt.csv',
                         help='Merged output filename.')
