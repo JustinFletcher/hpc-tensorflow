@@ -138,7 +138,7 @@ class ClusterExperiment(object):
 
                 # Customize your options here.
                 job_name = "dist_ex_%d" % i
-                walltime = "4:00:00"
+                walltime = "72:00:00"
                 select = "1:ncpus=20:mpiprocs=20"
                 command = "python " + exp_filename
 
