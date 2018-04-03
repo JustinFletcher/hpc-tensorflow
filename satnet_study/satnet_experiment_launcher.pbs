@@ -13,4 +13,5 @@
 #PBS -N satnet_rcnn_rn101_4w
 module load anaconda3/5.0.1 tensorflow
 cd /gpfs/projects/ml/hpc-tensorflow/satnet_study/
-python satnet_experiment.py --worker_replicas=4 --ps_tasks=1
+# python satnet_experiment.py --worker_replicas=4 --ps_tasks=1
+python satnet_experiment.py
