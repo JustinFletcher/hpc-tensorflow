@@ -68,14 +68,23 @@ def tensorflow_experiment():
 
     for c in range(FLAGS.num_cycles):
 
+        
+        print("\n\n\n\n#################")
+
+
         # Run the training script with the constructed flag string, blocking.
-        print("Calling: python %s %s" % (FLAGS.train_script, flags_string))
+        print("\n\n\n\nCalling: python %s %s" % (FLAGS.train_script, flags_string))
 
         # Call train in barckground.
         os.system("python %s %s" % (FLAGS.train_script, flags_string))
 
+        # Run the training script with the constructed flag string, blocking.
+        print("\n\n\n\nCalling: python %s %s" % (FLAGS.eval_script, flags_string))
+
         # Call eval.
         os.system("python %s %s" % (FLAGS.eval_script, flags_string))
+
+        print("\n\n\n\n#################")
 
 
     # Get a list of events filenames in the model_dir.
