@@ -87,6 +87,59 @@ def tensorflow_experiment():
     # Write the data we saved to a csv file.
     with open(FLAGS.log_dir + FLAGS.log_filename, 'w') as csvfile:
 
+        # Open a writer and write the header.
+        csvwriter = csv.writer(csvfile)
+
+        # Initialize placeholders.
+        row = []
+        current_step = -1
+
+        # Iterate over the event files in the model_dir.
+        for ef in events_file_list:
+
+            # print("--New event file")
+            # print(ef)
+
+            # Iterate over each summary file in the model dir.
+            for e in tf.train.summary_iterator(ef):
+
+                # print("====Start e from tf.train.summary_iterator(ef)======")
+                # print(e.step)
+
+                # Parse the step.
+                step = e.step
+
+                # Check if this iterator has yielded a new step...
+                if step > current_step:
+
+                    # ...if so, write out the prior row...
+                    if len(row) == len(summaries_to_store) + 1:
+
+                        csvwriter.writerow(row)
+
+                    # ...then clear the row storage...
+                    row = []
+
+                    # ...and append and update the step.
+                    row.append(step)
+                    current_step = step
+
+                # Iterate over each summary value.
+                for v in e.summary.value:
+
+                    # print("=======Start v from e.summary.value========")
+                    # print(v.tag)
+
+                    # Check if present summary is in the summary list.
+                    if v.tag in summaries_to_store:
+
+                        # If so, append them.
+                        row.append(v.simple_value)
+
+                    # print("=======End v from e.summary.value========")
+
+                # print("====End e from tf.train.summary_iterator(ef)======")
+
 
 def main(_):
 
@@ -122,6 +175,8 @@ if __name__ == '__main__':
     parser.add_argument('--num_cycles', type=int,
                         default=10,
                         help='Number of times to repeat train and eval cycle.')
+
+
 
 
     # Parse known arguements.
