@@ -1,3 +1,5 @@
+print("hi")
+
 import os
 import sys
 import csv
@@ -148,7 +150,7 @@ if __name__ == '__main__':
                         help='The core training script.')
 
     parser.add_argument('--log_dir', type=str,
-                        default='/gpfs/projects/ml/log/satnet_study/',
+                        default='/gpfs/projects/ml/log/satnet_study_local/',
                         help='Model checkpoint and event directory.')
 
     parser.add_argument('--pipeline_config_path', type=str,
