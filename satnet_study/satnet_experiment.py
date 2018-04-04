@@ -66,7 +66,7 @@ def tensorflow_experiment():
         # ...append it to the string.
         flags_string += " --%s=%s" % (key, value)
 
-    for c in FLAGS.num_cycles:
+    for c in range(FLAGS.num_cycles):
 
         # Run the training script with the constructed flag string, blocking.
         print("Calling: python %s %s" % (FLAGS.train_script, flags_string))
