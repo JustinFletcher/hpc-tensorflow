@@ -1,4 +1,3 @@
-print("hi")
 
 import os
 import sys
@@ -67,9 +66,17 @@ def tensorflow_experiment():
         # ...append it to the string.
         flags_string += " --%s=%s" % (key, value)
 
-    # Run the training script with the constructed flag string, blocking.
-    print("Calling: python %s %s" % (FLAGS.train_script, flags_string))
-    os.system("python %s %s" % (FLAGS.train_script, flags_string))
+    for c in FLAGS.num_cycles:
+
+        # Run the training script with the constructed flag string, blocking.
+        print("Calling: python %s %s" % (FLAGS.train_script, flags_string))
+
+        # Call train in barckground.
+        os.system("python %s %s" % (FLAGS.train_script, flags_string))
+
+        # Call eval.
+        os.system("python %s %s" % (FLAGS.eval_script, flags_string))
+
 
     # Get a list of events filenames in the model_dir.
     events_file_list = glob.glob(FLAGS.log_dir + 'events.out.tfevents.*')
@@ -149,6 +156,10 @@ if __name__ == '__main__':
                         default='/gpfs/projects/ml/hpc-tensorflow/satnet_study/models/research/object_detection/train.py',
                         help='The core training script.')
 
+    parser.add_argument('--eval_script', type=str,
+                        default='/gpfs/projects/ml/hpc-tensorflow/satnet_study/models/research/object_detection/eval.py',
+                        help='The core training script.')
+
     parser.add_argument('--log_dir', type=str,
                         default='/gpfs/projects/ml/log/satnet_study_local/',
                         help='Model checkpoint and event directory.')
@@ -160,6 +171,14 @@ if __name__ == '__main__':
     parser.add_argument('--log_filename', type=str,
                         default='defualt.csv',
                         help='Merged output filename.')
+
+    parser.add_argument('--num_cycles', type=int,
+                        default=10,
+                        help='Number of times to repeat train and eval cycle.')
+
+    parser.add_argument('--log_dir', type=str,
+                        default='/gpfs/projects/ml/log/satnet_study_local/',
+                        help='Model checkpoint and event directory.')
 
 
 
