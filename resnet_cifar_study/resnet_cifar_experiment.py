@@ -9,17 +9,17 @@ import tensorflow as tf
 def tensorflow_experiment():
 
     # Clear existing directory.
-    if tf.gfile.Exists(FLAGS.model_dir):
+    if tf.gfile.Exists(FLAGS.log_dir):
 
-        tf.gfile.DeleteRecursively(FLAGS.model_dir)
+        tf.gfile.DeleteRecursively(FLAGS.log_dir)
 
-    tf.gfile.MakeDirs(FLAGS.model_dir)
+    tf.gfile.MakeDirs(FLAGS.log_dir)
 
     # The path to the training script.
     # train_script='/gpfs/home/fletch/hpc-tensorflow/resnet_cifar_study/models/official/resnet/cifar10_main.py'
 
     # The script expects a model_dir, use log_dir.
-    FLAGS['model_dir'] = FLAGS.log_dir
+    vars(FLAGS)['model_dir'] = FLAGS.log_dir
 
     # These flags are acceptable to the training script provided by TF.
     script_flags = ['h',
@@ -133,10 +133,10 @@ if __name__ == '__main__':
 
     # Establish default arguements.
     parser.add_argument('--train_script', type=str,
-                        default='/gpfs/home/fletch/hpc-tensorflow/resnet_cifar_study/models/official/resnet/cifar10_main.py',
+                        default='/gpfs/projects/ml/hpc-tensorflow/resnet_cifar_study/models/official/resnet/cifar10_main.py',
                         help='The core training script.')
 
-    parser.add_argument('--model_dir', type=str,
+    parser.add_argument('--log_dir', type=str,
                         default='/gpfs/projects/ml/tfmodels/resnet_cifar_model/',
                         help='Model checkpoint and event directory.')
 

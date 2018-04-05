@@ -1,0 +1,17 @@
+#!/bin/bash
+## Walltime in hours:minutes:seconds
+#PBS -l walltime=72:00:00
+## -o specifies output file
+#PBS -o ~/log/queue_exhaustion.out
+## -e specifies error file
+#PBS -e ~/log/queue_exhaustion.error
+## Nodes, Processors, CPUs (processors and CPUs should always match)
+#PBS -l select=1:mpiprocs=20:ncpus=20
+## Enter the proper queue
+#PBS -q standard
+#PBS -A MHPCC96650DE1
+#PBS -N satnet_rcnn_rn101_4w
+module load anaconda3/5.0.1 tensorflow
+cd /gpfs/projects/ml/hpc-tensorflow/satnet_study/
+# python satnet_experiment.py --worker_replicas=4 --ps_tasks=1
+python satnet_experiment.py

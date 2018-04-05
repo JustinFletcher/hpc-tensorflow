@@ -9,10 +9,9 @@ import tensorflow as tf
 # import pyhpc as hpc
 # hpc.ClusterExperiment()
 
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
+sys.path.insert(1, os.path.join(sys.path[0], '../../'))
 
 from cluster_experiment import ClusterExperiment
-
 
 def main(FLAGS):
 
@@ -27,9 +26,18 @@ def main(FLAGS):
     exp = ClusterExperiment()
 
     # Set the number of reps for each config.
-    exp.set_rep_count(2)
+    # Set the number of reps for each config.
+    exp.set_rep_count(5)
+
     # Set independent parameters.
-    exp.add_design('batch_size', [128, 256])
+    exp.add_design('train_batch_size', [128, 256])
+    # exp.add_design('batch_interval', [1, 2, 4, 8, 16, 32, 64, 128])
+    # exp.add_design('train_enqueue_threads', [1, 2, 4, 8, 16, 32, 64, 128])
+    exp.add_design('learning_rate', [0.0001])
+    exp.add_design('max_steps', [10000])
+    exp.add_design('test_interval', [100])
+    exp.add_design('pause_time', [10])
+
     # Launch the experiment.
     exp.launch_experiment(exp_filename=FLAGS.experiment_py_file,
                           log_dir=FLAGS.log_dir,
@@ -71,7 +79,7 @@ if __name__ == '__main__':
                         help='Number of seconds to run before giving up.')
 
     parser.add_argument('--experiment_py_file', type=str,
-                        default='/gpfs/home/fletch/hpc-tensorflow/resnet_cifar_study/resnet_cifar_experiment.py',
+                        default='/gpfs/projects/ml/hpc-tensorflow/resnet_cifar_study/resnet_cifar_experiment.py',
                         help='Number of seconds to run before giving up.')
 
     # Parse known arguements.

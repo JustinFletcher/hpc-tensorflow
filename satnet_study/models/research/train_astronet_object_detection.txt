@@ -1,0 +1,26 @@
+
+# Note: This command needs to run from every new terminal you start. 
+# If you wish to avoid running this manually, you can add it as a new line to the end of your ~/.bashrc file.
+
+# From tensorflow/models/research/
+export PYTHONPATH=$PYTHONPATH:`pwd`:`pwd`/slim
+
+# from research directory: install object_detection
+python3 setup.py install
+
+# running locally:
+    
+# From the tensorflow/models/research/ directory
+python3 object_detection/train.py \
+    --logtostderr \
+    --pipeline_config_path=/Users/gmartin/tensorflow/models/research/astro_net/models/model/faster_rcnn_resnet101_astronet.config \
+    --train_dir=/Users/gmartin/tensorflow/models/research/astro_net/models/model/train
+    
+# From the tensorflow/models/research/ directory
+python3 object_detection/eval.py \
+    --logtostderr \
+    --pipeline_config_path=/Users/gmartin/tensorflow/models/research/astro_net/models/model/faster_rcnn_resnet101_astronet.config \
+    --checkpoint_dir=/Users/gmartin/tensorflow/models/research/astro_net/models/model/train \
+    --eval_dir=/Users/gmartin/tensorflow/models/research/astro_net/models/model/eval
+    
+tensorboard --logdir=/Users/gmartin/tensorflow/models/research/astro_net/models/model        
