@@ -67,11 +67,12 @@ def read_annotation_file(filename):
     bbox_width = [float(x[3]) for x in content]
     bbox_height = [float(x[4]) for x in content]
 
-    y_min = [y0-h/2 for y0, h in zip(y_center, bbox_height)]
-    y_max = [y0+h/2 for y0, h in zip(y_center, bbox_height)]
+    # clip ranges to 0 and 1
+    y_min = [max(y0-h/2,0.) for y0, h in zip(y_center, bbox_height)]
+    y_max = [min(y0+h/2,1.) for y0, h in zip(y_center, bbox_height)]
 
-    x_min = [x0-w/2 for x0, w in zip(x_center, bbox_width)]
-    x_max = [x0+w/2 for x0, w in zip(x_center, bbox_width)]
+    x_min = [max(x0-w/2,0.) for x0, w in zip(x_center, bbox_width)]
+    x_max = [min(x0+w/2,1.) for x0, w in zip(x_center, bbox_width)]
 
     anno = {}
     anno['class_id'] = np.array([int(x[0]) for x in content])
@@ -310,7 +311,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--directory',
                         type=str, 
-                        default='~/tensorflow/false_positives/data', 
+                        default='~/tensorflow/false_positives/datat', 
                         help='Directory (train,test,valid).txt files and where to store corresponding *.tfrecords')
     FLAGS, unparsed = parser.parse_known_args()
 
