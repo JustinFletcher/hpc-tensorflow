@@ -62,6 +62,10 @@ def read_annotation_file(filename):
         content = f.readlines()
     content = [x.strip().split(' ') for x in content]
 
+    # fix for label: index is off by 1
+    label = [int(x[0])+1 for x in content]
+    # print('label:',label)
+
     x_center = [float(x[1]) for x in content]
     y_center = [float(x[2]) for x in content]
     bbox_width = [float(x[3]) for x in content]
@@ -75,7 +79,7 @@ def read_annotation_file(filename):
     x_max = [min(x0+w/2,1.) for x0, w in zip(x_center, bbox_width)]
 
     anno = {}
-    anno['class_id'] = np.array([int(x[0]) for x in content])
+    anno['class_id'] = np.array(label)
 
     anno['y_min'] = np.array(y_min)
     anno['y_max'] = np.array(y_max)
