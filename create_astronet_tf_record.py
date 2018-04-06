@@ -163,6 +163,14 @@ def convert_astronet_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True)
             'image/object/class/label': dataset_util.int64_list_feature([x for x in annotations['class_id']])
             }))
         writer.write(example.SerializeToString())
+        
+        # print('y_min:',annotations['y_min'])
+        # print('y_max:',annotations['y_max'])
+        # print('x_min:',annotations['x_min'])
+        # print('x_max:',annotations['x_max'])
+        # print('class_id:',annotations['class_id'])
+        # print('class_label:',[CLASS_TEXT[x].encode('utf8') for x in annotations['class_id']])
+
         # break  # debug
     writer.close()
 
