@@ -87,6 +87,21 @@ def read_annotation_file(filename):
     anno['x_min'] = np.array(x_min)
     anno['x_max'] = np.array(x_max)
 
+    n = len(x_min)
+
+    diff = [0]*n
+    trunc = [0]*n
+    frontal = 'Frontal'.encode('utf8')
+    pose = [frontal]*n
+
+    # print('difficult:',diff)
+    # print('truncated:',trunc)
+    # print('poses:',pose)
+
+    anno['difficult'] = np.array(diff)
+    anno['truncated'] = np.array(trunc)
+    anno['poses'] = np.array(pose)
+
     return anno
 
 def convert_astronet_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True):
@@ -146,6 +161,10 @@ def convert_astronet_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True)
         filename = image_path_list[index].split('/')[-1]
         # print('filename',filename)
 
+        difficult_obj = annotations['difficult']
+        truncated = annotations['truncated']
+        poses = annotations['poses']        
+
         example = tf.train.Example(features=tf.train.Features(feature={
             'image/height': dataset_util.int64_feature(h),
             'image/width': dataset_util.int64_feature(w),
@@ -160,16 +179,22 @@ def convert_astronet_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True)
             'image/object/bbox/xmin': dataset_util.float_list_feature(xmin_norm),
             'image/object/bbox/xmax': dataset_util.float_list_feature(xmax_norm),
             'image/object/class/text': dataset_util.bytes_list_feature([CLASS_TEXT[x].encode('utf8') for x in annotations['class_id']]),
-            'image/object/class/label': dataset_util.int64_list_feature([x for x in annotations['class_id']])
+            'image/object/class/label': dataset_util.int64_list_feature([x for x in annotations['class_id']]),
+            'image/object/difficult': dataset_util.int64_list_feature(difficult_obj),
+            'image/object/truncated': dataset_util.int64_list_feature(truncated),
+            'image/object/view': dataset_util.bytes_list_feature(poses),
             }))
         writer.write(example.SerializeToString())
-        
+
         # print('y_min:',annotations['y_min'])
         # print('y_max:',annotations['y_max'])
         # print('x_min:',annotations['x_min'])
         # print('x_max:',annotations['x_max'])
         # print('class_id:',annotations['class_id'])
         # print('class_label:',[CLASS_TEXT[x].encode('utf8') for x in annotations['class_id']])
+        # print('image/object/difficult:',difficult_obj)
+        # print('image/object/truncated:',truncated)
+        # print('image/object/view:',poses)
 
         # break  # debug
     writer.close()
