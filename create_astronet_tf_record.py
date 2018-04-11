@@ -63,7 +63,8 @@ def read_annotation_file(filename):
     content = [x.strip().split(' ') for x in content]
 
     # fix for label: index is off by 1
-    label = [int(x[0])+1 for x in content]
+    # label = [int(x[0])+1 for x in content]
+    label = [1 for x in content]
     # print('label:',label)
 
     x_center = [float(x[1]) for x in content]
@@ -79,13 +80,13 @@ def read_annotation_file(filename):
     x_max = [min(x0+w/2,1.) for x0, w in zip(x_center, bbox_width)]
 
     anno = {}
-    anno['class_id'] = np.array(label)
+    anno['class_id'] = label
 
-    anno['y_min'] = np.array(y_min)
-    anno['y_max'] = np.array(y_max)
+    anno['y_min'] = y_min
+    anno['y_max'] = y_max
 
-    anno['x_min'] = np.array(x_min)
-    anno['x_max'] = np.array(x_max)
+    anno['x_min'] = x_min
+    anno['x_max'] = x_max
 
     n = len(x_min)
 
@@ -98,9 +99,9 @@ def read_annotation_file(filename):
     # print('truncated:',trunc)
     # print('poses:',pose)
 
-    anno['difficult'] = np.array(diff)
-    anno['truncated'] = np.array(trunc)
-    anno['poses'] = np.array(pose)
+    anno['difficult'] = diff
+    anno['truncated'] = trunc
+    anno['poses'] = pose
 
     return anno
 
@@ -161,6 +162,8 @@ def convert_astronet_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True)
         filename = image_path_list[index].split('/')[-1]
         # print('filename',filename)
 
+        label = annotations['class_id']
+        text = [CLASS_TEXT[x].encode('utf8') for x in label]
         difficult_obj = annotations['difficult']
         truncated = annotations['truncated']
         poses = annotations['poses']        
@@ -168,7 +171,7 @@ def convert_astronet_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True)
         example = tf.train.Example(features=tf.train.Features(feature={
             'image/height': dataset_util.int64_feature(h),
             'image/width': dataset_util.int64_feature(w),
-            'image/depth': dataset_util.int64_feature(c),
+            # 'image/depth': dataset_util.int64_feature(c),
             'image/filename': dataset_util.bytes_feature(filename.encode('utf8')),
             'image/source_id': dataset_util.bytes_feature(filename.encode('utf8')),
             'image/key/sha256': dataset_util.bytes_feature(key.encode('utf8')),
@@ -178,20 +181,20 @@ def convert_astronet_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True)
             'image/object/bbox/ymax': dataset_util.float_list_feature(ymax_norm),
             'image/object/bbox/xmin': dataset_util.float_list_feature(xmin_norm),
             'image/object/bbox/xmax': dataset_util.float_list_feature(xmax_norm),
-            'image/object/class/text': dataset_util.bytes_list_feature([CLASS_TEXT[x].encode('utf8') for x in annotations['class_id']]),
-            'image/object/class/label': dataset_util.int64_list_feature([x for x in annotations['class_id']]),
+            'image/object/class/text': dataset_util.bytes_list_feature(text),
+            'image/object/class/label': dataset_util.int64_list_feature(label),
             'image/object/difficult': dataset_util.int64_list_feature(difficult_obj),
             'image/object/truncated': dataset_util.int64_list_feature(truncated),
             'image/object/view': dataset_util.bytes_list_feature(poses),
             }))
         writer.write(example.SerializeToString())
 
-        # print('y_min:',annotations['y_min'])
-        # print('y_max:',annotations['y_max'])
-        # print('x_min:',annotations['x_min'])
-        # print('x_max:',annotations['x_max'])
-        # print('class_id:',annotations['class_id'])
-        # print('class_label:',[CLASS_TEXT[x].encode('utf8') for x in annotations['class_id']])
+        # print('y_min:',ymin_norm)
+        # print('y_max:',ymax_norm)
+        # print('x_min:',xmin_norm)
+        # print('x_max:',xmax_norm)
+        # print('label:',label)
+        # print('text:',text)
         # print('image/object/difficult:',difficult_obj)
         # print('image/object/truncated:',truncated)
         # print('image/object/view:',poses)
@@ -216,9 +219,9 @@ def convert_astronet_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True)
                                 .int64_list
                                 .value[0])
 
-            depth_recon = int(example.features.feature['image/depth']
-                                .int64_list
-                                .value[0])
+            # depth_recon = int(example.features.feature['image/depth']
+            #                     .int64_list
+            #                     .value[0])
 
             filename_recon = example.features.feature['image/filename'].bytes_list.value[0].decode('utf-8')
             # print('filename_recon',filename_recon)
@@ -232,12 +235,12 @@ def convert_astronet_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True)
             # img_1d = np.fromstring(img_string, dtype=np.uint8)
             # image_recon = img_1d.reshape((height_recon, width_recon, depth_recon))
 
-            ymin_recon = np.array(example.features.feature['image/object/bbox/ymin'].float_list.value)
-            ymax_recon = np.array(example.features.feature['image/object/bbox/ymax'].float_list.value)
-            xmin_recon = np.array(example.features.feature['image/object/bbox/xmin'].float_list.value)
-            xmax_recon = np.array(example.features.feature['image/object/bbox/xmax'].float_list.value)
+            ymin_recon = example.features.feature['image/object/bbox/ymin'].float_list.value
+            ymax_recon = example.features.feature['image/object/bbox/ymax'].float_list.value
+            xmin_recon = example.features.feature['image/object/bbox/xmin'].float_list.value
+            xmax_recon = example.features.feature['image/object/bbox/xmax'].float_list.value
 
-            class_label_recon = np.array(example.features.feature['image/object/class/label'].int64_list.value)
+            class_label_recon = example.features.feature['image/object/class/label'].int64_list.value
 
             # get origiinal image, annot:
             # image = np.array(Image.open(image_path_list[index]))
@@ -266,13 +269,13 @@ def convert_astronet_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True)
             annotations = read_annotation_file(annot_path_list[index])
 
             # Note: annotation data is already normalized:
-            ymin = np.array(annotations['y_min'])
-            ymax = np.array(annotations['y_max'])
+            ymin = annotations['y_min']
+            ymax = annotations['y_max']
 
-            xmin = np.array(annotations['x_min'])
-            xmax = np.array(annotations['x_max'])
+            xmin = annotations['x_min']
+            xmax = annotations['x_max']
 
-            class_label = np.array(annotations['class_id'])
+            class_label = annotations['class_id']
 
             #check if equal
             if not np.allclose(image,image_recon):
@@ -284,8 +287,8 @@ def convert_astronet_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True)
             if not np.allclose(width,width_recon):
                 print('image width is not equal for index:',index, width, width_recon)
 
-            if not np.allclose(depth,depth_recon):
-                print('image depth is not equal for index:',index, depth, depth_recon)
+            # if not np.allclose(depth,depth_recon):
+            #     print('image depth is not equal for index:',index, depth, depth_recon)
 
             if not filename == filename_recon:
                 print('filename is not equal for index:',index, filename, filename_recon, len(filename), len(filename_recon))
@@ -304,6 +307,7 @@ def convert_astronet_to_tfrecords(path_to_txt, path_to_tfrecords, verify = True)
                 print('image bbox ymax is not equal for index:',index, ymax, ymax_recon)
 
             if not np.allclose(class_label,class_label_recon):
+            # if np.allclose(class_label,class_label_recon):
                 print('image bbox class_label is not equal for index:',index, class_label, class_label_recon)
 
             index += 1
@@ -328,19 +332,22 @@ def main(unused_argv):
     print('Generating train.tfrecords...')
     convert_astronet_to_tfrecords(
         path_to_txt = path_to_train_txt, 
-        path_to_tfrecords = path_to_train_tfrecords)
+        path_to_tfrecords = path_to_train_tfrecords, 
+        verify = False)
 
     print('Generating test.tfrecords...')
     convert_astronet_to_tfrecords(
         path_to_txt = path_to_test_txt, 
-        path_to_tfrecords = path_to_test_tfrecords)
+        path_to_tfrecords = path_to_test_tfrecords, 
+        verify = False)
 
     print('Generating valid.tfrecords...')
     convert_astronet_to_tfrecords(
         path_to_txt = path_to_valid_txt, 
-        path_to_tfrecords = path_to_valid_tfrecords)
+        path_to_tfrecords = path_to_valid_tfrecords, 
+        verify = False)
 
-    print('Done')
+    print('main: Done')
 
 
 if __name__ == '__main__':
