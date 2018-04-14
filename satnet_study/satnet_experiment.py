@@ -194,7 +194,7 @@ if __name__ == '__main__':
                         help='Merged output filename.')
 
     parser.add_argument('--num_cycles', type=int,
-                        default=10,
+                        default=2,
                         help='Number of times to repeat train and eval cycle.')
 
 
