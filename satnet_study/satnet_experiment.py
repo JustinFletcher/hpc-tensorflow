@@ -92,6 +92,7 @@ def tensorflow_experiment():
 
         print("\n\n\n\n#################")
 
+    summaries_to_store = ['TotalLoss']
 
     # Get a list of events filenames in the model_dir.
     events_file_list = glob.glob(FLAGS.log_dir + 'events.out.tfevents.*')
