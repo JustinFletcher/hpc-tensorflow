@@ -70,27 +70,32 @@ def tensorflow_experiment():
         # ...append it to the string.
         flags_string += " --%s=%s" % (key, value)
 
-
     for c in range(FLAGS.num_cycles):
 
-        print("\n\n\n\n#################")
+        print("\n\n\n\n######## Begin Cycle #########")
 
+        print("We are about to try to call train.py")
 
         # Run the training script with the constructed flag string, blocking.
-        print("\n\n\n\nCalling: python %s %s" % (FLAGS.eval_script, flags_string))
+        print("\n\n\n\nCalling: python %s %s" % (FLAGS.eval_script,
+                                                 flags_string))
 
         # Call eval.
-        os.system("python %s %s &" % (FLAGS.eval_script, flags_string))
+        os.system("python %s %s &" % (FLAGS.eval_script,
+                                      flags_string))
 
+        print("Now, we're calling test.py.")
 
         # Run the training script with the constructed flag string, blocking.
-        print("\n\n\n\nCalling: python %s %s" % (FLAGS.train_script, flags_string))
+        print("\n\n\n\nCalling: python %s %s" % (FLAGS.train_script,
+                                                 flags_string))
 
         # TODO: Make background.
         # Call train in barckground.
-        os.system("python %s %s" % (FLAGS.train_script, flags_string))
+        os.system("python %s %s" % (FLAGS.train_script,
+                                    flags_string))
 
-        print("\n\n\n\n#################")
+        print("\n\n\n\n######## End Cycle #########")
 
     summaries_to_store = ['TotalLoss']
 

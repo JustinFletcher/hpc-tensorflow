@@ -13,7 +13,6 @@ sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
 from cluster_experiment import ClusterExperiment
 
-
 def main(FLAGS):
 
     # Clear and remake the log directory.
@@ -28,8 +27,10 @@ def main(FLAGS):
 
     # Set the number of reps for each config.
     exp.set_rep_count(2)
+
     # Set independent parameters.
-    exp.add_design('batch_size', [128, 256])
+    exp.add_design('worker_replicas', [1, 2, 4])
+
     # Launch the experiment.
     exp.launch_experiment(exp_filename=FLAGS.experiment_py_file,
                           log_dir=FLAGS.log_dir,
@@ -59,7 +60,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--log_dir', type=str,
-                        default='/gpfs/projects/ml/log/astronet_faster_rcnn_resnet101_study/',
+                        default='/gpfs/projects/ml/log/satnet_study/',
                         help='Summaries log directory.')
 
     parser.add_argument('--log_filename', type=str,
@@ -71,7 +72,7 @@ if __name__ == '__main__':
                         help='Number of seconds to run before giving up.')
 
     parser.add_argument('--experiment_py_file', type=str,
-                        default='/gpfs/home/fletch/hpc-tensorflow/astronet_faster_rcnn_resnet101_study/faster_rcnn_astronet_experiment.py',
+                        default='/gpfs/projects/ml/hpc-tensorflow/satnet_study/satnet_experiment.py',
                         help='Number of seconds to run before giving up.')
 
     # Parse known arguements.
