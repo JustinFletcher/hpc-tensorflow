@@ -179,10 +179,10 @@ if __name__ == '__main__':
 
     parser.add_argument('--eval_script', type=str,
                         default='/gpfs/projects/ml/hpc-tensorflow/satnet_study/models/research/object_detection/eval.py',
-                        help='The core training script.')
+                        help='The core evaluation script.')
 
     parser.add_argument('--log_dir', type=str,
-                        default='/gpfs/projects/ml/log/satnet_study_local/',
+                        default='/gpfs/projects/ml/log/satnet_study_gm_1/',
                         help='Model checkpoint and event directory.')
 
     parser.add_argument('--pipeline_config_path', type=str,
@@ -190,7 +190,7 @@ if __name__ == '__main__':
                         help='Path to pipeling config.')
 
     parser.add_argument('--log_filename', type=str,
-                        default='defualt.csv',
+                        default='default.csv',
                         help='Merged output filename.')
 
     parser.add_argument('--num_cycles', type=int,
