@@ -21,6 +21,9 @@ FLAGS = None
 
 # NUM_CLASSES = 1 # 'satellite'
 
+MAX_NUM_DETECTIONS = 10
+NO_BBOX_DETECTION = [-1. -1. -1. -1]
+
 class AstroNetBatchProducer(TensorFlowBatchProducer):
 
     def __init__(self,
@@ -36,7 +39,7 @@ class AstroNetBatchProducer(TensorFlowBatchProducer):
         self.keys_to_features = {
                 'image/height': tf.FixedLenFeature([], tf.int64, 1),
                 'image/width': tf.FixedLenFeature([], tf.int64, 1),
-                'image/depth': tf.FixedLenFeature([], tf.int64, 1),
+                # 'image/depth': tf.FixedLenFeature([], tf.int64, 1),
                 'image/filename': tf.FixedLenFeature([], tf.string, default_value=''),
                 'image/source_id': tf.FixedLenFeature([], tf.string, default_value=''),
                 'image/key/sha256': tf.FixedLenFeature([], tf.string, default_value=''),
@@ -53,46 +56,57 @@ class AstroNetBatchProducer(TensorFlowBatchProducer):
 
     def _read_and_decode_astronet(self, filename_queue):
 
+        # print('In _read_and_decode_astronet():')
         # Instantiate a TFRecord reader.
         reader = tf.TFRecordReader()
 
         # Read a single example from the input queue.
+        # print('reader.read():')
         _, serialized_example = reader.read(filename_queue)
 
         # Parse the example into features.
-        features = tf.parse_single_example(
-            serialized_example,
-            self.keys_to_features)
+        # print('tf.parse_single_example:')
+        features = tf.parse_single_example(serialized_example,self.keys_to_features)
 
         # Convert from a scalar string tensor to a uint8 tensor with shape [height,width,channels].
+        # print('tf.image.decode_jpeg:')
         image = tf.image.decode_jpeg(features['image/encoded'],channels=3)
 
         height = tf.cast(features['image/height'], tf.int32)
         width = tf.cast(features['image/width'], tf.int32)
-        depth = tf.cast(features['image/depth'], tf.int32)
+        # depth = tf.cast(features['image/depth'], tf.int32)
     
         # print('height',height)
         # print('width',width)
         # print('depth',depth)
-        image_shape = tf.stack([height, width, depth])       
-        image = tf.reshape(image, image_shape)
-        # image = tf.reshape(image, [512,512,3])
+        # image_shape = tf.stack([height, width, depth])       
+        # image = tf.reshape(image, image_shape)
+        image = tf.reshape(image, [512,512,3])
         # print('image.shape',image.shape)
 
         label = tf.cast(features['image/object/class/label'], tf.int32)
         class_name = tf.cast(features['image/object/class/text'], tf.string)
         file_name = tf.cast(features['image/filename'], tf.string)
 
+        # print('BoundingBox():')
         bbox = BoundingBox(keys=None, prefix='image/object/bbox/').tensors_to_item(features)
 
-        return image, height, width, depth, label, class_name, file_name, bbox
+        # pad the number of bounding boxes to a fixed size
+        paddings = [[0, MAX_NUM_DETECTIONS-tf.shape(bbox)[0]], [0, 0]]
+        # print('bbox:',bbox)
+        # print('tf.shape(bbox)[0]:',tf.shape(bbox)[0])
+        # print('paddings:',paddings)
+        # print('bbox_padded:')
+        bbox_padded = tf.pad(bbox, paddings, 'CONSTANT', constant_values=-1.0)
 
-    def get_train_batch_ops(self,
-                            batch_size=128,
-                            capacity=11430,
-                            num_threads=16,
-                            min_after_dequeue=100):
+        bbox = tf.reshape(bbox_padded,(10,4))
 
+        print('return:')
+        return image, height, width, label, class_name, file_name, bbox
+
+    def get_train_batch_ops(self, capacity):
+
+        print('')
         print('In get_train_batch_ops:')
         
         # Set the filename pointing to the data file.
@@ -102,89 +116,31 @@ class AstroNetBatchProducer(TensorFlowBatchProducer):
         with tf.name_scope('train_input'):
 
             # Produce a queue of files to read from.
-            filename_queue = tf.train.string_input_producer([filename], capacity=1)
-
-            # image_single,\
-            # height_single,\
-            # width_single, \
-            # depth_single,\
-            # label_single,\
-            # class_name_single,\
-            # file_name_single,\
-            # bbox_single = self._read_and_decode_astronet(filename_queue)
-
-            # set the shapes of the tensors:
-            # image_single.set_shape([HEIGHT,WIDTH,DEPTH])
-            # height_single.set_shape([ONE])
-            # width_single.set_shape([ONE])
-
-            # image_shape = tf.shape(image_single)
-            # height_shape = tf.shape(height_single)
-            # width_shape = tf.shape(width_single)
-            # depth_shape = tf.shape(depth_single)
-            # box_shape = tf.shape(bbox_single)
-            # class_shape = tf.shape(class_name_single)
-            # filename_shape = tf.shape(file_name_single)
-            # label_shape = tf.shape(label_single)
-            # with tf.Session() as sess:
-            #     sess.run(tf.global_variables_initializer())
-            #     print(sess.run(image_shape))
-            #     print(sess.run(height_shape))
-            #     print(sess.run(width_shape))
-            #     print(sess.run(depth_shape))
-            #     print(sess.run(box_shape))
-            #     print(sess.run(class_shape))
-            #     print(sess.run(filename_shape))
-            #     print(sess.run(label_shape))
-
+            filename_queue = tf.train.string_input_producer([filename], capacity=capacity)
 
             return self._read_and_decode_astronet(filename_queue)
-            # Shuffle the examples and collect them into batch_size batches.
-            '''
-            tf.train.shuffle_batch needs to know all the shapes of the tensors, which are presumed to be a fixed size.
-            However, the bounded box tensor shape is [N,4], where N is the number of object detections for this image.
-            The N varies from image to image and is not a fixed number. So, tf.train.shuffle_batch can't really handle this scenario.
-            See: https://stackoverflow.com/questions/39456554/tensorflow-tensor-with-inconsistent-dimension-size for more details.
-            SOLUTION:
-            One way around this is to store the image AND annotation files as tfrecords. In this case, tf.train.shuffle_batch would work just fine.
-            The annotation file bounded box information would then have to be decoded after the batch shuffle.
-            For now, let's kick the can down the road and not implement tr.train.shuffle_batch. That is, the train, validation and test tfrecord file inputs
-            were already randomized in order. So, this should be okay for now.
-            '''
 
-            # return tf.train.shuffle_batch(
-            #         [image_single, height_single, width_single, depth_single, label_single, class_name_single, file_name_single, bbox_single],
-            #         batch_size=batch_size,
-            #         capacity=capacity,
-            #         num_threads=num_threads,
-            #         min_after_dequeue=min_after_dequeue)
-            #         # shapes=[[515,512,3],[1],[1],[1],[1],[1,],[1,],[1,4]])
+    def get_val_batch_ops(self,capacity):
 
-    def get_val_batch_ops(self,
-                          batch_size=11429,
-                          capacity=1429,
-                          num_threads=16,
-                          min_after_dequeue=100):
-
+        print('')
         print('In get_val_batch_ops:')
         
         # Set the filename pointing to the data file.
         filename = os.path.join(self.data_dir, self.val_file)
 
+        print('filename:',filename)
+
         # Create an input scope for the graph.
         with tf.name_scope('val_input'):
 
             # Produce a queue of files to read from.
-            filename_queue = tf.train.string_input_producer([filename], capacity=1)
+            filename_queue = tf.train.string_input_producer([filename], capacity=capacity)
 
             return self._read_and_decode_astronet(filename_queue)
 
-    def get_test_batch_ops(self,
-                          batch_size=1428,
-                          capacity=1428,
-                          num_threads=16,
-                          min_after_dequeue=100):
+    def get_test_batch_ops(self,capacity):
 
+        print('')
         print('In get_test_batch_ops:')
 
         # Set the filename pointing to the data file.
@@ -194,66 +150,74 @@ class AstroNetBatchProducer(TensorFlowBatchProducer):
         with tf.name_scope('val_input'):
 
             # Produce a queue of files to read from.
-            filename_queue = tf.train.string_input_producer([filename], capacity=1)
+            filename_queue = tf.train.string_input_producer([filename], capacity=capacity)
 
             return self._read_and_decode_astronet(filename_queue)
 
     def test_batch_read_from_records(self, 
                                      which_batch, 
                                      path_to_save_files,  
-                                     numBatches=2):
+                                     numBatches=2,
+                                     batch_size = 2,
+                                     capacity = 32,
+                                     num_threads = 2,
+                                     ):
         if which_batch == 'train':
+            
+            image,\
+            height,\
+            width,\
+            label,\
+            class_name,\
+            file_name,\
+            bbox = self.get_train_batch_ops(capacity=32)
 
-            image_batch,\
-            height_batch,\
-            width_batch,\
-            depth_batch,\
-            label_batch,\
-            class_name_batch,\
-            file_name_batch,\
-            bbox_batch = self.get_train_batch_ops(batch_size=numBatches,
-                                                  capacity=33,
-                                                  num_threads=2,
-                                                  min_after_dequeue=10)
         elif which_batch == 'valid':
 
-            image_batch,\
-            height_batch,\
-            width_batch,\
-            depth_batch,\
-            label_batch,\
-            class_name_batch,\
-            file_name_batch,\
-            bbox_batch = self.get_val_batch_ops(batch_size=numBatches,
-                                                capacity=32,
-                                                num_threads=2,
-                                                min_after_dequeue=10)
+            image,\
+            height,\
+            width,\
+            label,\
+            class_name,\
+            file_name,\
+            bbox = self.get_val_batch_ops(capacity=32)
+
         elif which_batch == 'test':
 
-            image_batch,\
-            height_batch,\
-            width_batch,\
-            depth_batch,\
-            label_batch,\
-            class_name_batch,\
-            file_name_batch,\
-            bbox_batch = self.get_test_batch_ops(batch_size=numBatches,
-                                                 capacity=32,
-                                                 num_threads=2,
-                                                 min_after_dequeue=10)
+            image,\
+            height,\
+            width,\
+            label,\
+            class_name,\
+            file_name,\
+            bbox = self.get_test_batch_ops(capacity=32)
 
         else:
             print('which_batch not valid')
             sys.exit()
 
-        # TODO: max_num_detections =3. Change if > 3 if required
-        class_detectons_batch = tf.cast([1,1,1],tf.int32) 
-        scores_batch = tf.cast([1.,1.,1.], tf.float32)
+        class_detection = tf.cast([1]*MAX_NUM_DETECTIONS,tf.int32) 
+        score = tf.cast([1.]*MAX_NUM_DETECTIONS, tf.float32)
+
+        print('In tf.train.batch():')
+        image_batch,\
+        height_batch,\
+        width_batch,\
+        label_batch,\
+        class_name_batch,\
+        file_name_batch,\
+        bbox_batch,\
+        class_detection_batch,\
+        score_batch = tf.train.batch([image, height, width, label, class_name, file_name, bbox, class_detection, score], 
+            batch_size=batch_size,
+            num_threads = num_threads,
+            capacity = capacity,
+            allow_smaller_final_batch = True)
 
         # The op for initializing the variables.
         init_op = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
 
-        with tf.Session()  as sess:
+        with tf.Session() as sess:
         
             sess.run(init_op)
             
@@ -262,56 +226,96 @@ class AstroNetBatchProducer(TensorFlowBatchProducer):
 
             category_index = {1: {'name': 'satellite'}}
 
+            print('Starting batch processing:')
             # Read off numBatches batches
-            for i in range(numBatches):
+            # for i in range(numBatches):
+            count = 0
+
+            try:
+                # in most cases coord.should_stop() will return True
+                # when there are no more samples to read
+                # if num_epochs=0 then it will run for ever
+                while not coord.should_stop():
+                        # will start reading, working data from input queue
+                        # and "fetch" the results of the computation graph
+                        # into raw_images and other raw data
+                    images,\
+                    heights,\
+                    widths,\
+                    labels,\
+                    class_names,\
+                    file_names,\
+                    bboxes,\
+                    class_detections,\
+                    scores = sess.run([image_batch, height_batch, width_batch, label_batch, class_name_batch, file_name_batch, bbox_batch, class_detection_batch, score_batch])
+     
+                    file_names   = [file_name.decode("utf-8") for file_name in file_names]
+                    output_paths = [os.path.join(path_to_save_files, file_name) for file_name in file_names]
+
+                    print('')
+                    print('images.shape:', images.shape)
+                    print('heights:', heights)
+                    print('widths:', widths)
+                    print('bboxes.shape:', bboxes.shape)
+                    print('bboxes:')
+                    print(bboxes)
+                    print('class_detections:')
+                    print(class_detections)
+                    print('class_detections.shape:')
+                    print(class_detections.shape)
+                    print('scores:')
+                    print(scores)
+                    print('scores.shape:')
+                    print(scores.shape)
+                    print('category_index:', category_index)
+                    print('file_names:')
+                    print(file_names)
+                    print('output_paths:')
+                    print(output_paths)
+
+                    # process each image in the batch:
+                    for i,output_path in enumerate(output_paths):
+
+                        # note: these are numpy arrays and not lists
+                        image = images[i,:,:,:]
+                        boxes = bboxes[i,:,:]
+                        # find out how many real detections:
+                        boxes = boxes[np.logical_not(boxes[:,0] < 0)]
+                        num_bboxes = boxes.shape[0]
+                        class_detection = class_detections[i].flatten()
+                        class_detection = class_detection[:num_bboxes]
+                        score = scores[i].flatten()
+                        score = score[:num_bboxes]
+
+                        print('boxes:')
+                        print(boxes)
+                        print('num_bboxes:',num_bboxes)
+                        print('boxes.shape:',boxes.shape)
+                        print('class_detection:')
+                        print(class_detection)
+                        print('score:')
+                        print(score)
+
+                        visualize_boxes_and_labels_on_image_array(
+                              image,
+                              boxes,
+                              class_detection,
+                              scores=score,
+                              category_index=category_index,
+                              instance_masks=None,
+                              use_normalized_coordinates=True,
+                              line_thickness=2)
+
+                        save_image_array_as_png(image, output_path)
+
+                    count += 1
+
+                    if count >= numBatches:
+                        break
             
-                images,\
-                heights,\
-                widths,\
-                depths,\
-                category_indices,\
-                class_detectons,\
-                file_names,\
-                boxes,\
-                scores = sess.run([ image_batch, 
-                                    height_batch, 
-                                    width_batch, 
-                                    depth_batch, 
-                                    label_batch, 
-                                    class_detectons_batch, 
-                                    file_name_batch, 
-                                    bbox_batch, 
-                                    scores_batch])
- 
-                file_names = file_names.decode("utf-8")
-                output_path = os.path.join(path_to_save_files, file_names)
-
-                print('images.shape:', images.shape)
-                print('heights:', heights)
-                print('widths:', widths)
-                print('depths:', depths)
-                print('boxes.shape:', boxes.shape)
-                print('boxes:',boxes)
-                print('class_detectons:', class_detectons)
-                print('scores:',scores)
-                print('category_indices:',category_index)
-                print('category_index:', category_index)
-                print('file_names:', file_names)
-
-                visualize_boxes_and_labels_on_image_array(
-                      images,
-                      boxes,
-                      class_detectons,
-                      scores=scores,
-                      category_index=category_index,
-                      instance_masks=None,
-                      use_normalized_coordinates=True,
-                      line_thickness=2)
-
-                save_image_array_as_png(images, output_path)
-            
-            coord.request_stop()
-            coord.join(threads)
+            finally:
+                coord.request_stop()
+                coord.join(threads)           
             print('')
 
 def main(unused_argv):
@@ -331,21 +335,24 @@ def main(unused_argv):
     test_path_to_save_files = os.path.join(data_dir, FLAGS.test_batch_out)
     valid_path_to_save_files = os.path.join(data_dir, FLAGS.valid_batch_out) 
 
-    batch_producer.test_batch_read_from_records(which_batch='train', 
-                                                path_to_save_files=train_path_to_save_files,
-                                                numBatches=32)
+    # batch_producer.test_batch_read_from_records(which_batch='train', 
+    #                                             path_to_save_files=train_path_to_save_files,
+    #                                             numBatches=32,
+    #                                             batch_size =2)
     batch_producer.test_batch_read_from_records(which_batch='valid', 
                                                 path_to_save_files=valid_path_to_save_files,
-                                                numBatches=16)
-    batch_producer.test_batch_read_from_records(which_batch='test', 
-                                                path_to_save_files=test_path_to_save_files,
-                                                numBatches=8)
+                                                numBatches=3,
+                                                batch_size =5)
+    # batch_producer.test_batch_read_from_records(which_batch='test', 
+    #                                             path_to_save_files=test_path_to_save_files,
+    #                                             numBatches=8
+    #                                             batch_size =2)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--directory',
                         type=str, 
-                        default='~/tensorflow/false_positives/data', 
+                        default='~/tensorflow/false_positives/datat', 
                         help='Directory where to save the batch images')
     parser.add_argument('--train_tfrecords',
                         type=str, 
