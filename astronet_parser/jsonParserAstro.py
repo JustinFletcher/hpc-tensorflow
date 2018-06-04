@@ -63,6 +63,7 @@ import itertools
 #from . import mask as maskUtils
 import os
 from collections import defaultdict
+from operator import itemgetter
 import sys
 PYTHON_VERSION = sys.version_info[0]
 if PYTHON_VERSION == 2:
@@ -170,7 +171,28 @@ class Astro:
                                                             "track_mode": [],
                                                             "value": [],
                                                             'eossa_files': [],
-                                                            'preraft_files':[]}
+                                                            'preraft_files': [],
+                                                            'image_center_azel': [],
+                                                            'azel_bounds_degs': [],
+                                                            'azel_origin_degs': [],
+                                                            'calibrations': [],
+                                                            'frame_processing_status': [],
+                                                            'height_m': [],
+                                                            'latitude_deg': [],
+                                                            'longitude_deg': [],
+                                                            'mean_star_spot_size': [],
+                                                            'pixel_bounds': [],
+                                                            'pixel_origin': [],
+                                                            'processing_status': [],
+                                                            'radec_bounds_degs': [],
+                                                            'sensor_temperature': [],
+                                                            'star_processing': [],
+                                                            'std_star_spot_size': [],
+                                                            'task_description': [],
+                                                            'gtds_files': [],
+                                                            'nominal_pointing_offsets': [],
+                                                            'predictions': [],
+                                                            'collection_uuid': []}
             # self.astroDict[astro_file_name]['object_astrometry'] = {    "classification": [],
             #                                                             "date": [],
             #                                                             "filter": [],
@@ -314,6 +336,48 @@ class Astro:
                                 self.astroDict[astro_file_name][k]['eossa_files'].append(False)
                             if 'preraft_files' not in v.keys():
                                 self.astroDict[astro_file_name][k]['preraft_files'].append(False)
+                            if 'image_center_azel' not in v.keys():
+                                self.astroDict[astro_file_name][k]['image_center_azel'].append(False)
+                            if 'azel_bounds_degs' not in v.keys():
+                                self.astroDict[astro_file_name][k]['azel_bounds_degs'].append(False)
+                            if 'azel_origin_degs' not in v.keys():
+                                self.astroDict[astro_file_name][k]['azel_origin_degs'].append(False)
+                            if 'calibrations' not in v.keys():
+                                self.astroDict[astro_file_name][k]['calibrations'].append(False)
+                            if 'frame_processing_status' not in v.keys():
+                                self.astroDict[astro_file_name][k]['frame_processing_status'].append(False)
+                            if 'height_m' not in v.keys():
+                                self.astroDict[astro_file_name][k]['height_m'].append(False)
+                            if 'latitude_deg' not in v.keys():
+                                self.astroDict[astro_file_name][k]['latitude_deg'].append(False)
+                            if 'longitude_deg' not in v.keys():
+                                self.astroDict[astro_file_name][k]['longitude_deg'].append(False)
+                            if 'mean_star_spot_size' not in v.keys():
+                                self.astroDict[astro_file_name][k]['mean_star_spot_size'].append(False)
+                            if 'pixel_bounds' not in v.keys():
+                                self.astroDict[astro_file_name][k]['pixel_bounds'].append(False)
+                            if 'pixel_origin' not in v.keys():
+                                self.astroDict[astro_file_name][k]['pixel_origin'].append(False)
+                            if 'processing_status' not in v.keys():
+                                self.astroDict[astro_file_name][k]['processing_status'].append(False)
+                            if 'radec_bounds_degs' not in v.keys():
+                                self.astroDict[astro_file_name][k]['radec_bounds_degs'].append(False)
+                            if 'sensor_temperature' not in v.keys():
+                                self.astroDict[astro_file_name][k]['sensor_temperature'].append(False)
+                            if 'star_processing' not in v.keys():
+                                self.astroDict[astro_file_name][k]['star_processing'].append(False)
+                            if 'std_star_spot_size' not in v.keys():
+                                self.astroDict[astro_file_name][k]['std_star_spot_size'].append(False)
+                            if 'task_description' not in v.keys():
+                                self.astroDict[astro_file_name][k]['task_description'].append(False)
+                            if 'gtds_files' not in v.keys():
+                                self.astroDict[astro_file_name][k]['gtds_files'].append(False)
+                            if 'nominal_pointing_offsets' not in v.keys():
+                                self.astroDict[astro_file_name][k]['nominal_pointing_offsets'].append(False)
+                            if 'predictions' not in v.keys():
+                                self.astroDict[astro_file_name][k]['predictions'].append(False)
+                            if 'collection_uuid' not in v.keys():
+                                self.astroDict[astro_file_name][k]['collection_uuid'].append(False)
 
                 self.astroDict[astro_file_name]['detections']['object_ast'].append(object_ast_list)
 
@@ -662,7 +726,7 @@ class Astro:
         # convert to a color image:
         # img_annot_rgb = cv2.cvtColor(img_annot_gray, cv2.COLOR_GRAY2RGB)
 
-        #MB" it's a 16 bit image!
+        #NB" it's a 16 bit image!
         green = ((0,255*256,0))
         font = cv2.FONT_HERSHEY_SIMPLEX
 
@@ -676,6 +740,42 @@ class Astro:
             right = int(x_0 + box_width/2)
             top = int(y_0 - box_height/2)
             bot = int(y_0 + box_height/2)
+            if(left < 0):
+                left = 0
+            if(top < 0):
+                top = 0
+            if(right > w):
+                right = w
+            if(bot > h):
+                bot = h
+            # print(class_name,h,w,x_0,y_0,left,right,top,bot)
+            cv2.rectangle(img_annot_rgb, (left, top), (right, bot), green, 1)
+            cv2.putText(img_annot_rgb, class_name, (left, top-4), font, 0.5, green, 2);
+        return img_annot_rgb
+
+    def annotateImage2(self,img,roi):
+
+        class_name = 'sat'
+        
+        img_annot_rgb = np.copy(img)
+
+        #NB" it's a 8 bit image!
+        green = ((0,255,0))
+        font = cv2.FONT_HERSHEY_SIMPLEX
+
+        # [h,w] = np.shape(img_annot_rgb)
+        h, w, channels = img_annot_rgb.shape
+
+        x_0 = roi['x_center']
+        y_0 = roi['y_center']
+
+        n = len(roi['label'])
+
+        for i in range(n):
+            left = int((x_0[i] - roi['bbox_width'][i]/2)*w)
+            right = int((x_0[i] + roi['bbox_width'][i]/2)*w)
+            top = int((y_0[i] - roi['bbox_height'][i]/2)*h)
+            bot = int((y_0[i] + roi['bbox_height'][i]/2)*h)
             if(left < 0):
                 left = 0
             if(top < 0):
@@ -717,6 +817,79 @@ class Astro:
         cv2.rectangle(img_annot_rgb, (left, top), (right, bot), green, 1)
         cv2.putText(img_annot_rgb, class_name, (left, top-4), font, 0.5, green, 2);
         cv2.imwrite(path2PngAnnot,img_annot_rgb)
+
+    def scale_image(self,image, scale):
+        height, width = image.shape[:2]
+        image_resized = cv2.resize(image,(scale*width, scale*height), interpolation = cv2.INTER_CUBIC)
+        # print('scale_image:',image.shape[:2])
+        # print('scale_image:',image_resized.shape[:2])
+        return image_resized
+
+    def extract_roi(self,image,ROI,IMAGE_WIDTH,IMAGE_HEIGHT):
+        offset = 0.5
+        x = ROI['x']
+        y = ROI['y']
+        w = ROI['w']
+        h = ROI['h']
+        x0 = int(x-w/2)
+        x1 = int(x+w/2)
+        y0 = int(y-h/2)
+        y1 = int(y+h/2)
+
+        image_roi = image[y0:y1, x0:x1]
+        # print('extract_roi x0,x1,y0,y1,x,y,w,h:',x0,x1,y0,y1,x,y,w,h)
+        # print('extract_roi:',image.shape[:2])
+        # print('extract_roi:',image_roi.shape[:2])
+        return image_roi
+
+    def getStats(self,astro_file_name):
+        # count the number of satellite detections per FITS image file: return a dictionary with this count for statistical analysis
+        fits_file_names_list =self.astroDict[astro_file_name]['header']['input_file']
+        indices_list = [idx for idx,val in enumerate(fits_file_names_list)]
+
+        #get the number of observations (i.e. detected objects) list:
+        observations_list = self.astroDict[astro_file_name]['header']['objects']
+
+        # save the number of detections per image in a dictionary:
+        hist_dict = defaultdict(int)
+        for idx in indices_list:
+            num_obs = int(observations_list[idx])
+            hist_dict[num_obs] += 1
+        return sorted(hist_dict.items(), key=itemgetter(0))
+
+    def getNumObs(self,astro_file_name,fitsFileName):
+        # gets the number of observations in the FITS fileName located in the directory astro_file_name:
+        fits_file_names_list =self.astroDict[astro_file_name]['header']['input_file']
+        indices_list = [idx for idx,val in enumerate(fits_file_names_list) if fitsFileName in val]
+
+        #get the number of observations (i.e. detected objects) list:
+        observations_list = self.astroDict[astro_file_name]['header']['objects']
+
+        # get number of observations:
+        num_obs = 0
+        for idx in indices_list:
+            num_obs += int(observations_list[idx])
+        return num_obs
+
+    def getNumObsPerFile(self,astro_file_name):
+        # creates a dictionary of number of observations per filename:
+        fits_file_names_list =self.astroDict[astro_file_name]['header']['input_file']
+        indices_list = [idx for idx,val in enumerate(fits_file_names_list)]
+
+        #get the number of observations (i.e. detected objects) list:
+        observations_list = self.astroDict[astro_file_name]['header']['objects']
+
+        obs_dict = {}
+
+        for idx in indices_list:
+            file_name = fits_file_names_list[idx].split('/')
+            file_name = file_name[len(file_name)-1]
+            file_name = file_name.replace('.fits','')
+            # print(file_name)
+            # sys.exit()
+            obs_dict[file_name] = observations_list[idx]
+
+        return obs_dict
 
     def createIndex(self):
         # create index
