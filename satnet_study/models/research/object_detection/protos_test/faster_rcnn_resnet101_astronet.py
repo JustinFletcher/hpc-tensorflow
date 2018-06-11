@@ -16,6 +16,7 @@ from object_detection.protos import grid_anchor_generator_pb2
 from object_detection.protos import hyperparams_pb2
 from object_detection.protos import box_predictor_pb2
 from object_detection.protos import post_processing_pb2
+from object_detection.protos import preprocessor_pb2
 
 import sys
 
@@ -145,6 +146,13 @@ adam_optimizer.learning_rate.CopyFrom(learning_rate)
 
 optimizer.adam_optimizer.CopyFrom(adam_optimizer)
 
+random_horizontal_flip = preprocessor_pb2.RandomHorizontalFlip()
+random_vertical_flip = preprocessor_pb2.RandomVerticalFlip()
+preprocessor1 = preprocessor_pb2.PreprocessingStep()
+preprocessor2 = preprocessor_pb2.PreprocessingStep()
+preprocessor1.random_horizontal_flip.CopyFrom(random_horizontal_flip)
+preprocessor2.random_vertical_flip.CopyFrom(random_vertical_flip)
+
 train_config.batch_size = 8
 train_config.optimizer.CopyFrom(optimizer)
 train_config.batch_queue_capacity = 8 
@@ -153,7 +161,9 @@ train_config.fine_tune_checkpoint = "/gpfs/projects/ml/astro_net/pretrained_resn
 train_config.from_detection_checkpoint = True
 train_config.gradient_clipping_by_norm = 10.0
 train_config.num_steps = 0 # indefinitely
-train_config.max_number_of_boxes = 100 
+train_config.max_number_of_boxes = 100
+train_config.data_augmentation_options.extend([preprocessor1,preprocessor2]) 
+# train_config.data_augmentation_options.add(preprocessor2) 
 
 eval_config.num_visualizations = 20
 eval_config.max_evals = 0 # indefinitely
@@ -164,8 +174,8 @@ detection_model.faster_rcnn.CopyFrom(faster_rcnn)
 faster_rcnn_astronet.model.CopyFrom(detection_model)
 faster_rcnn_astronet.train_config.CopyFrom(train_config)
 faster_rcnn_astronet.eval_config.CopyFrom(eval_config)
-faster_rcnn_astronet.train_config.CopyFrom(train_config)
-faster_rcnn_astronet.eval_config.CopyFrom(eval_config)
+# faster_rcnn_astronet.train_config.CopyFrom(train_config)
+# faster_rcnn_astronet.eval_config.CopyFrom(eval_config)
 faster_rcnn_astronet.train_input_reader.CopyFrom(train_input_reader)
 faster_rcnn_astronet.eval_input_reader.CopyFrom(eval_input_reader)
 

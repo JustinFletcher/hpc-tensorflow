@@ -21,6 +21,7 @@ from object_detection.protos import grid_anchor_generator_pb2
 from object_detection.protos import hyperparams_pb2
 from object_detection.protos import box_predictor_pb2
 from object_detection.protos import post_processing_pb2
+from object_detection.protos import preprocessor_pb2
 
 import sys
 import argparse
@@ -174,6 +175,15 @@ class TrainConfig:
         self.optimizer = optimizer_pb2.Optimizer()
         self.optimizer.adam_optimizer.CopyFrom(self.adam_optimizer)
 
+        self.random_horizontal_flip = preprocessor_pb2.RandomHorizontalFlip()
+        self.random_vertical_flip = preprocessor_pb2.RandomVerticalFlip()
+
+        self.preprocessor1 = preprocessor_pb2.PreprocessingStep()
+        self.preprocessor2 = preprocessor_pb2.PreprocessingStep()
+
+        self.preprocessor1.random_horizontal_flip.CopyFrom(self.random_horizontal_flip)
+        self.preprocessor2.random_vertical_flip.CopyFrom(self.random_vertical_flip)
+
         self.train_config.batch_size = 8
         self.train_config.optimizer.CopyFrom(self.optimizer)
         self.train_config.batch_queue_capacity = 8 
@@ -182,7 +192,8 @@ class TrainConfig:
         self.train_config.from_detection_checkpoint = True
         self.train_config.gradient_clipping_by_norm = 10.0
         self.train_config.num_steps = 0 # indefinitely
-        self.train_config.max_number_of_boxes = 100 
+        self.train_config.max_number_of_boxes = 100
+        self.train_config.data_augmentation_options.extend([self.preprocessor1, self.preprocessor2])  
 
 class EvalConfig:
     def __init__(self):
@@ -229,8 +240,8 @@ def main(unused_argv):
 
     config_generator = AstroNetFasterRcnnResnet101Generator(config_file)
 
-    config_generator.batch_size(4)
-    config_generator.initial_learning_rate(0.003)
+    config_generator.batch_size(8)
+    config_generator.initial_learning_rate(0.002)
     config_generator.config_file_output()
 
     print('main: Done')
@@ -239,7 +250,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--config_file',
                         type=str, 
-                        default='/object_detection/protos_test/faster_rcnn_resnet101_astronet_test.config', 
+                        default='object_detection/protos_test/faster_rcnn_resnet101_astronet_test.config', 
                         help='astronet config file name')
     FLAGS, unparsed = parser.parse_known_args()
     main(unparsed)
