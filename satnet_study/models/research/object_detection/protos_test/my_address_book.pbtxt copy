@@ -1,0 +1,18 @@
+people {
+  name: "Greg Martin"
+  id: 1
+  email: "gregory.james.martin@gmail.com"
+  phones {
+    number: "760 845-5042"
+    type: MOBILE
+  }
+}
+people {
+  name: "Suzanne Jewell"
+  id: 2
+  email: "zjewell17@gmail.com"
+  phones {
+    number: "858 245-1888"
+    type: MOBILE
+  }
+}
