@@ -303,7 +303,7 @@ class ClusterExperiment(object):
             # Open a csv for writeout.
             with open(log_dir + '/' + log_filename, 'w') as csvfile:
 
-                # Join the parameter labels and respons labels, making a header.
+                # Join parameter labels and respons labels, making a header.
                 headers = self.get_parameter_labels() + response_labels
 
                 # Open a writer and write the header.
