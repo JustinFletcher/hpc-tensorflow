@@ -8,7 +8,8 @@ from __future__ import print_function
 # Generate faster_rcnn_resnet101_astronet.config file and permit varying certain paramters.
 
 from google.protobuf import text_format
-import faster_rcnn_resnet101_astronet_pb2
+# import faster_rcnn_resnet101_astronet_pb2
+from object_detection.protos_test import faster_rcnn_resnet101_astronet_pb2
 from object_detection.protos import model_pb2
 from object_detection.protos import faster_rcnn_pb2
 from object_detection.protos import train_pb2
@@ -57,11 +58,23 @@ class AstroNetFasterRcnnResnet101Generator:
     def initial_learning_rate(self, initial_learning_rate):
         self.faster_rcnn_astronet.train_config.optimizer.adam_optimizer.learning_rate.exponential_decay_learning_rate.initial_learning_rate = initial_learning_rate
 
+    def num_batch_queue_threads(self, num_batch_queue_threads):
+       self.faster_rcnn_astronet.train_config.num_batch_queue_threads = num_batch_queue_threads
+
+    def batch_queue_capacity(self, batch_queue_capacity):
+       self.faster_rcnn_astronet.train_config.batch_queue_capacity = batch_queue_capacity
+
+    def num_steps(self, num_steps):
+       self.faster_rcnn_astronet.train_config.num_steps = num_steps
+
+    def max_number_of_boxes(self, max_number_of_boxes):
+       self.faster_rcnn_astronet.train_config.max_number_of_boxes = max_number_of_boxes
+
     def config_file_in(config_file_name):
         self.config_file_name = config_file_name
 
     def config_file_output(self):
-        print('config_file:',self.config_file_name)
+        # print('config_file:',self.config_file_name)
         # Write the model back to disk.
         with open(self.config_file_name, "w") as f:
           f.write(text_format.MessageToString(self.faster_rcnn_astronet))        
@@ -199,36 +212,36 @@ class EvalConfig:
     def __init__(self):
         self.eval_config = eval_pb2.EvalConfig()
         self.eval_config.num_visualizations = 20
-        self.eval_config.max_evals = 0 # indefinitely
-        self.eval_config.num_examples = 5000
+        self.eval_config.max_evals = 1 # 0 = indefinitely
+        self.eval_config.num_examples = 50
 
-class TFRecordInputReader:
+class TFRecordInputReader(object):
     def __init__(self):
         self.tf_record_input_reader = input_reader_pb2.TFRecordInputReader()
     
 class TrainTFRecordInputReader(TFRecordInputReader):
     def __init__(self):
-        super().__init__()
+        super(TrainTFRecordInputReader,self).__init__()
         self.tf_record_input_reader.input_path.append("/gpfs/projects/ml/data/satdetect/astronet_train_3.tfrecords")
 
 class EvalTFRecordInputReader(TFRecordInputReader):
     def __init__(self):
-        super().__init__()
+        super(EvalTFRecordInputReader,self).__init__()
         self.tf_record_input_reader.input_path.append("/gpfs/projects/ml/data/satdetect/astronet_valid_3.tfrecords")
 
-class InputReader:
+class InputReader(object):
     def __init__(self):
         self.input_reader = input_reader_pb2.InputReader()
     
 class TrainInputReader(InputReader):
     def __init__(self,tf_record_input_reader):
-        super().__init__()
+        super(TrainInputReader,self).__init__()
         self.input_reader.tf_record_input_reader.CopyFrom(tf_record_input_reader)
         self.input_reader.label_map_path = "/gpfs/projects/ml/data/satdetect/astronet_label_map_2.pbtxt"
 
 class EvalInputReader(InputReader):
     def __init__(self,tf_record_input_reader):
-        super().__init__()
+        super(EvalInputReader,self).__init__()
         self.input_reader.tf_record_input_reader.CopyFrom(tf_record_input_reader)
         self.input_reader.label_map_path = "/gpfs/projects/ml/data/satdetect/astronet_label_map_2.pbtxt"
         self.input_reader.shuffle = False
@@ -242,6 +255,10 @@ def main(unused_argv):
 
     config_generator.batch_size(8)
     config_generator.initial_learning_rate(0.002)
+    config_generator.num_batch_queue_threads(8)
+    config_generator.batch_queue_capacity(8)
+    config_generator.num_steps(10000)
+    config_generator.max_number_of_boxes(25)
     config_generator.config_file_output()
 
     print('main: Done')
