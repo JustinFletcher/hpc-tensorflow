@@ -332,7 +332,7 @@ class ClusterExperiment(object):
                     # Check if the output file has been written.
                     if os.path.exists(output_file):
 
-                        with open(output_file, 'rb') as f:
+                        with open(output_file, 'r') as f:
 
                             reader = csv.reader(f)
 

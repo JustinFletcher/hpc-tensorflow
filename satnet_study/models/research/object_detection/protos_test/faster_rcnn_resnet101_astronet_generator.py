@@ -212,7 +212,7 @@ class EvalConfig:
     def __init__(self):
         self.eval_config = eval_pb2.EvalConfig()
         self.eval_config.num_visualizations = 20
-        self.eval_config.max_evals = 1 # 0 = indefinitely
+        self.eval_config.max_evals = 2 # 0 = indefinitely
         self.eval_config.num_examples = 50
 
 class TFRecordInputReader(object):
